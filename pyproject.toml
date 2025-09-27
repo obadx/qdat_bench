@@ -12,7 +12,7 @@ version = "1.0.0"
 authors = [
   { name="Abdullah", email="abdullahamlyossef@gmail.com" },
 ]
-description = "Downloading and Processing Quran Recitaion of the Holy Quran"
+description = "Benchmarking Some of Tajweed Rules to help creating New AI models to assist Muslim to learn reciting the Holy Quran using AI "
 readme = "README.md"
 dependencies = [
   "datasets==3.3.2",
@@ -32,7 +32,7 @@ classifiers = [
 [project.optional-dependencies]
 
 test = [
-  "pytest",
+  "pytest>=8.4.2",
 ]
 
 
