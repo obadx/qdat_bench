@@ -1,0 +1,50 @@
+# main docs of setup tools: https://setuptools.pypa.io/en/latest/userguide/quickstart.html
+# pypip tutoral: https://packaging.python.org/en/latest/tutorials/packaging-projects/
+# Video Tutorial: https://www.youtube.com/watch?v=v6tALyc4C10
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+include-package-data = true # to include data directories
+
+[project]
+name = "qdat_bench"
+version = "1.0.0"
+authors = [
+  { name="Abdullah", email="abdullahamlyossef@gmail.com" },
+]
+description = "Downloading and Processing Quran Recitaion of the Holy Quran"
+readme = "README.md"
+dependencies = [
+  "datasets==3.3.2",
+  "pyarrow>=20.0.0",
+  "quran-transcript>=0.1.1",
+  "huggingface_hub>=0.35.1",
+  "pydantic>=2.11.9",
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+# Optional dependencies
+[project.optional-dependencies]
+
+test = [
+  "pytest",
+]
+
+
+ui = [
+    "pandas>=2.3.2",
+    "streamlit>=1.49.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/obadx/prepare-quran-dataset"
+Issues = "https://github.com/obadx/prepare-quran-dataset/issues"
+
+# # for addint data: https://setuptools.pypa.io/en/latest/userguide/datafiles.html#package-data
+# [tool.setuptools.package-data]
+# quran_transcript = ["data/*"]
