@@ -7,7 +7,7 @@ class Language(BaseModel):
     # General
     title: str
     subtitle: str
-    
+
     # Navigation
     previous: str
     next: str
@@ -15,14 +15,14 @@ class Language(BaseModel):
     edit_annotation: str
     download_json: str
     clear_annotations: str
-    
+
     # Status messages
     annotated: str
     not_annotated: str
     annotation_saved: str
     no_annotations: str
     all_annotations_cleared: str
-    
+
     # Sections
     audio_sample: str
     quran_reference: str
@@ -31,7 +31,7 @@ class Language(BaseModel):
     sifat_table: str
     qdat_bench_annotation: str
     annotations_management: str
-    
+
     # Fields
     id: str
     source: str
@@ -50,11 +50,11 @@ class Language(BaseModel):
     madd_lengths: str
     ghonnah: str
     qalqalah: str
-    
+
     # Gender options
     male: str
     female: str
-    
+
     # Madd lengths
     qalo_alif_len: str
     qalo_waw_len: str
@@ -62,14 +62,14 @@ class Language(BaseModel):
     separate_madd: str
     allam_alif_len: str
     madd_aared_len: str
-    
+
     # Ghonnah options
     noon_moshaddadah_len: str
     noon_mokhfah_len: str
-    
+
     # Qalqalah options
     qalqalah_field: str
-    
+
     # Sifat attributes
     hams: str
     jahr: str
@@ -93,7 +93,7 @@ class Language(BaseModel):
     not_mostateel: str
     maghnoon: str
     not_maghnoon: str
-    
+
     # Sifat column names
     phoneme: str
     hams_or_jahr: str
@@ -111,7 +111,7 @@ class Language(BaseModel):
 class EnglishLang(Language):
     title: str = "Quran Audio Transcription Annotation Tool"
     subtitle: str = ""
-    
+
     # Navigation
     previous: str = "Previous"
     next: str = "Next"
@@ -119,14 +119,14 @@ class EnglishLang(Language):
     edit_annotation: str = "Edit Annotation"
     download_json: str = "Download JSON"
     clear_annotations: str = "Clear All Annotations"
-    
+
     # Status messages
     annotated: str = "✓ Annotated"
     not_annotated: str = "Not annotated"
     annotation_saved: str = "Annotation saved"
     no_annotations: str = "No annotations have been saved yet."
     all_annotations_cleared: str = "All annotations cleared"
-    
+
     # Sections
     audio_sample: str = "Audio Sample"
     quran_reference: str = "Quran Reference"
@@ -135,7 +135,7 @@ class EnglishLang(Language):
     sifat_table: str = "Sifat Table"
     qdat_bench_annotation: str = "QdataBenchItem Annotation"
     annotations_management: str = "Annotations Management"
-    
+
     # Fields
     id: str = "ID"
     source: str = "Source"
@@ -154,11 +154,11 @@ class EnglishLang(Language):
     madd_lengths: str = "Madd Lengths"
     ghonnah: str = "Ghonnah"
     qalqalah: str = "Qalqalah"
-    
+
     # Gender options
     male: str = "male"
     female: str = "female"
-    
+
     # Madd lengths
     qalo_alif_len: str = "Qalo Alif Len"
     qalo_waw_len: str = "Qalo Waw Len"
@@ -166,14 +166,14 @@ class EnglishLang(Language):
     separate_madd: str = "Separate Madd"
     allam_alif_len: str = "Allam Alif Len"
     madd_aared_len: str = "Madd Aared Len"
-    
+
     # Ghonnah options
     noon_moshaddadah_len: str = "Noon Moshaddadah Len"
     noon_mokhfah_len: str = "Noon Mokhfah Len"
-    
+
     # Qalqalah options
     qalqalah_field: str = "Qalqalah"
-    
+
     # Sifat attributes
     hams: str = "hams"
     jahr: str = "jahr"
@@ -197,7 +197,7 @@ class EnglishLang(Language):
     not_mostateel: str = "not_mostateel"
     maghnoon: str = "maghnoon"
     not_maghnoon: str = "not_maghnoon"
-    
+
     # Sifat column names
     phoneme: str = "Phoneme"
     hams_or_jahr: str = "hams_or_jahr"
@@ -215,7 +215,7 @@ class EnglishLang(Language):
 class ArabicLang(Language):
     title: str = "أداة تدوين تسجيلات القرآن الكريم"
     subtitle: str = ""
-    
+
     # Navigation
     previous: str = "السابق"
     next: str = "التالي"
@@ -223,14 +223,14 @@ class ArabicLang(Language):
     edit_annotation: str = "تعديل التدوين"
     download_json: str = "تحميل JSON"
     clear_annotations: str = "مسح كل التدوينات"
-    
+
     # Status messages
     annotated: str = "✓ تم التدوين"
     not_annotated: str = "لم يتم التدوين"
     annotation_saved: str = "تم حفظ التدوين"
     no_annotations: str = "لا توجد تدوينات محفوظة بعد"
     all_annotations_cleared: str = "تم مسح جميع التدوينات"
-    
+
     # Sections
     audio_sample: str = "عينة الصوت"
     quran_reference: str = "مرجع القرآن"
@@ -239,7 +239,7 @@ class ArabicLang(Language):
     sifat_table: str = "جدول الصفات"
     qdat_bench_annotation: str = "تدوين QdataBenchItem"
     annotations_management: str = "إدارة التدوينات"
-    
+
     # Fields
     id: str = "المعرف"
     source: str = "المصدر"
@@ -258,11 +258,11 @@ class ArabicLang(Language):
     madd_lengths: str = "أطوال المد"
     ghonnah: str = "الغنة"
     qalqalah: str = "القلقلة"
-    
+
     # Gender options
     male: str = "ذكر"
     female: str = "أنثى"
-    
+
     # Madd lengths
     qalo_alif_len: str = "طول مد الألف في قالوا"
     qalo_waw_len: str = "طول مد الواو في قالوا"
@@ -270,14 +270,14 @@ class ArabicLang(Language):
     separate_madd: str = "مد المنفصل"
     allam_alif_len: str = "طول مد الألف في علام"
     madd_aared_len: str = "طول مد العارض للسكون"
-    
+
     # Ghonnah options
     noon_moshaddadah_len: str = "طول النون المشددة"
     noon_mokhfah_len: str = "طول النون المخفاة"
-    
+
     # Qalqalah options
     qalqalah_field: str = "القلقلة"
-    
+
     # Sifat attributes - Using the original mapping
     hams: str = "همس"
     jahr: str = "جهر"
@@ -301,7 +301,7 @@ class ArabicLang(Language):
     not_mostateel: str = "لا إستطالة"
     maghnoon: str = "مغن"
     not_maghnoon: str = "لا غنة"
-    
+
     # Sifat column names
     phoneme: str = "الصوت"
     hams_or_jahr: str = "همس أو جهر"
@@ -317,10 +317,7 @@ class ArabicLang(Language):
 
 
 # Language mapping
-LANGUAGES = {
-    "english": EnglishLang,
-    "arabic": ArabicLang
-}
+LANGUAGES = {"english": EnglishLang, "arabic": ArabicLang}
 
 
 def get_language(lang: Literal["english", "arabic"]) -> Language:
@@ -328,64 +325,60 @@ def get_language(lang: Literal["english", "arabic"]) -> Language:
 
 
 def map_attribute_to_language(
-    value: str, 
-    source_lang: Language, 
-    target_lang: Language
+    value: str, source_lang: Language, target_lang: Language
 ) -> str:
     """
     Map an attribute value from source language to target language.
-    
+
     Args:
         value: The attribute value to translate
         source_lang: Source language instance
         target_lang: Target language instance
-        
+
     Returns:
         Translated value if found, otherwise the original value
     """
     # Get all fields from both language models
     source_fields = source_lang.model_dump()
     target_fields = target_lang.model_dump()
-    
+
     # Find the key in source language that matches the value
     for key, source_value in source_fields.items():
         if source_value == value:
             # Return the corresponding value from target language
             return target_fields.get(key, value)
-    
+
     # If not found, return the original value
     return value
 
 
 def reverse_map_attribute(
-    value: str, 
-    target_lang: Language, 
-    source_lang: Language = None
+    value: str, target_lang: Language, source_lang: Language | None = None
 ) -> str:
     """
     Reverse map an attribute value from target language back to source language (default English).
     Useful for converting UI selections back to internal English values.
-    
+
     Args:
         value: The attribute value to reverse translate
         target_lang: The language the value is currently in
         source_lang: The language to translate to (defaults to English)
-        
+
     Returns:
         Original value in source language if found, otherwise the input value
     """
     if source_lang is None:
         source_lang = EnglishLang()
-    
+
     # Get all fields from both language models
     target_fields = target_lang.model_dump()
     source_fields = source_lang.model_dump()
-    
+
     # Find the key in target language that matches the value
     for key, target_value in target_fields.items():
         if target_value == value:
             # Return the corresponding value from source language
             return source_fields.get(key, value)
-    
+
     # If not found, return the original value
     return value
