@@ -325,3 +325,67 @@ LANGUAGES = {
 
 def get_language(lang: Literal["english", "arabic"]) -> Language:
     return LANGUAGES[lang]()
+
+
+def map_attribute_to_language(
+    value: str, 
+    source_lang: Language, 
+    target_lang: Language
+) -> str:
+    """
+    Map an attribute value from source language to target language.
+    
+    Args:
+        value: The attribute value to translate
+        source_lang: Source language instance
+        target_lang: Target language instance
+        
+    Returns:
+        Translated value if found, otherwise the original value
+    """
+    # Get all fields from both language models
+    source_fields = source_lang.model_dump()
+    target_fields = target_lang.model_dump()
+    
+    # Find the key in source language that matches the value
+    for key, source_value in source_fields.items():
+        if source_value == value:
+            # Return the corresponding value from target language
+            return target_fields.get(key, value)
+    
+    # If not found, return the original value
+    return value
+
+
+def reverse_map_attribute(
+    value: str, 
+    target_lang: Language, 
+    source_lang: Language = None
+) -> str:
+    """
+    Reverse map an attribute value from target language back to source language (default English).
+    Useful for converting UI selections back to internal English values.
+    
+    Args:
+        value: The attribute value to reverse translate
+        target_lang: The language the value is currently in
+        source_lang: The language to translate to (defaults to English)
+        
+    Returns:
+        Original value in source language if found, otherwise the input value
+    """
+    if source_lang is None:
+        source_lang = EnglishLang()
+    
+    # Get all fields from both language models
+    target_fields = target_lang.model_dump()
+    source_fields = source_lang.model_dump()
+    
+    # Find the key in target language that matches the value
+    for key, target_value in target_fields.items():
+        if target_value == value:
+            # Return the corresponding value from source language
+            return source_fields.get(key, value)
+    
+    # If not found, return the original value
+    return value
