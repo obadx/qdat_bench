@@ -371,7 +371,14 @@ def annotate_addional_qdabenc_fields():
     # QdataBenchItem fields
     st.header("QdataBenchItem Annotation")
 
-    st.session_state.gender = st.radio("Gender", ["male", "female"])
+    # Update gender using the return value
+    # Handle case where gender might not be set yet
+    gender_index = 0
+    if hasattr(st.session_state, 'gender') and st.session_state.gender:
+        gender_index = 0 if st.session_state.gender == "male" else 1
+    st.session_state.gender = st.radio(
+        "Gender", ["male", "female"], index=gender_index
+    )
 
     st.subheader("Madd Lengths")
     cols = st.columns(4)
@@ -405,22 +412,51 @@ def annotate_addional_qdabenc_fields():
     st.subheader("Ghonnah")
     ghonnah_cols = st.columns(2)
     with ghonnah_cols[1]:
+        # Get current index for noon_moshaddadah_len
+        if hasattr(st.session_state, 'noon_moshaddadah_len') and st.session_state.noon_moshaddadah_len is not None:
+            try:
+                current_noon_moshaddadah_index = list(NoonMoshaddahLen).index(st.session_state.noon_moshaddadah_len)
+            except ValueError:
+                current_noon_moshaddadah_index = 0
+        else:
+            current_noon_moshaddadah_index = 0
         st.session_state.noon_moshaddadah_len = st.selectbox(
             "Noon Moshaddadah Len",
             options=list(NoonMoshaddahLen),
             format_func=lambda x: x.name,
+            index=current_noon_moshaddadah_index
         )
 
     with ghonnah_cols[0]:
+        # Get current index for noon_mokhfah_len
+        if hasattr(st.session_state, 'noon_mokhfah_len') and st.session_state.noon_mokhfah_len is not None:
+            try:
+                current_noon_mokhfah_index = list(NoonMokhfahLen).index(st.session_state.noon_mokhfah_len)
+            except ValueError:
+                current_noon_mokhfah_index = 0
+        else:
+            current_noon_mokhfah_index = 0
         st.session_state.noon_mokhfah_len = st.selectbox(
             "Noon Mokhfah Len",
             options=list(NoonMokhfahLen),
             format_func=lambda x: x.name,
+            index=current_noon_mokhfah_index
         )
 
     st.subheader("Qalqalah")
+    # Get current index for qalqalah
+    if hasattr(st.session_state, 'qalqalah') and st.session_state.qalqalah is not None:
+        try:
+            current_qalqalah_index = list(Qalqalah).index(st.session_state.qalqalah)
+        except ValueError:
+            current_qalqalah_index = 0
+    else:
+        current_qalqalah_index = 0
     st.session_state.qalqalah = st.selectbox(
-        "Qalqalah", options=list(Qalqalah), format_func=lambda x: x.name
+        "Qalqalah", 
+        options=list(Qalqalah), 
+        format_func=lambda x: x.name,
+        index=current_qalqalah_index
     )
 
 
