@@ -37,6 +37,8 @@ def initialize():
         st.session_state.edit_mode = False
     if "item_to_edit" not in st.session_state:
         st.session_state.item_to_edit = None
+    if "gen_ph_script_pressed" not in st.session_state:
+        st.session_state.gen_ph_script_pressed = False
 
     # Initialize QdataBenchItem fields
     qdat_item_fields = set(QdataBenchItem.model_fields.keys()) - {"id", "original_id"}
@@ -205,9 +207,13 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
 
 # Phonetization
 def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttributes):
+    phonetic_script = None
     st.subheader("Phonetic Transcription")
     if st.button("Generate Phonetic Transcription"):
-        phonetizer_out = quran_phonetizer(uthmani_script, default_moshaf)
+        st.session_state.gen_ph_script_pressed = True
+        phonetizer_out = quran_phonetizer(
+            st.session_state.uthmani_script, default_moshaf
+        )
         st.session_state.phonetic_script = phonetizer_out.phonemes
 
         # Create sifat table
@@ -219,16 +225,16 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
         st.session_state.sifat_df = pd.DataFrame(sifat_data)
         # st.rerun()
 
-        # Editable phonetic script
-        st.session_state.annotated_phonetic_script = st.text_area(
-            "Phonetic Script",
-            value=phonetizer_out.phonemes,
-            # value=st.session_state.phonetic_script,
-            width=300,
-            key="phonetic_script_editor",
-        )
+    # Editable phonetic script
+    # if st.session_state.gen_ph_script_pressed:
+    st.session_state.phonetic_script = st.text_area(
+        "Phonetic Script",
+        value=st.session_state.phonetic_script,
+        width=300,
+        key="phonetic_script_editor",
+    )
 
-        annotate_sifat()
+    annotate_sifat()
 
 
 def annotate_sifat():
@@ -339,7 +345,7 @@ def annotate_sifat():
                     for col, options in column_options.items()
                 },
             },
-            use_container_width=True,
+            width="stretch",
             num_rows="dynamic",  # Change to dynamic to allow adding rows through the editor
             key=editor_key,
             disabled=["row_index"],  # Make row index non-editable
@@ -413,6 +419,13 @@ def annotate_addional_qdabenc_fields():
     )
 
 
+def reset_item_session_state():
+    st.session_state.phonetic_script = ""
+    st.session_state.sifat_df = pd.DataFrame()
+    st.session_state.last_editor_key = ""
+    st.session_state.edit_mode = False
+
+
 def save_navigatoin_bar(item, ids):
     # Navigation and saving
     st.divider()
@@ -422,10 +435,7 @@ def save_navigatoin_bar(item, ids):
         if st.button("Previous") and st.session_state.index > 0:
             st.session_state.index -= 1
             # Reset for the new item
-            st.session_state.phonetic_script = ""
-            st.session_state.sifat_df = pd.DataFrame()
-            st.session_state.last_editor_key = ""
-            st.session_state.edit_mode = False
+            reset_item_session_state()
             st.rerun()
 
     with col2:
@@ -457,7 +467,7 @@ def save_navigatoin_bar(item, ids):
                 allam_alif_len=st.session_state.allam_alif_len,
                 madd_aared_len=st.session_state.madd_aared_len,
                 qalqalah=st.session_state.qalqalah,
-                phonetic_transcript=st.session_state.annotated_phonetic_script,
+                phonetic_transcript=st.session_state.phonetic_script,
                 sifat=sifat_list,
             )
 
@@ -510,10 +520,7 @@ def save_navigatoin_bar(item, ids):
         if st.button("Next") and st.session_state.index < len(ids) - 1:
             st.session_state.index += 1
             # Reset for the new item
-            st.session_state.phonetic_script = ""
-            st.session_state.sifat_df = pd.DataFrame()
-            st.session_state.last_editor_key = ""
-            st.session_state.edit_mode = False
+            reset_item_session_state()
             st.rerun()
 
 
