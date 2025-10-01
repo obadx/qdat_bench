@@ -207,11 +207,12 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
 
 # Phonetization
 def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttributes):
-    phonetic_script = None
     st.subheader("Phonetic Transcription")
     if st.button("Generate Phonetic Transcription"):
         # Toggle the flag to force re-render of the text area
-        st.session_state.gen_ph_script_pressed = not st.session_state.gen_ph_script_pressed
+        st.session_state.gen_ph_script_pressed = (
+            not st.session_state.gen_ph_script_pressed
+        )
         phonetizer_out = quran_phonetizer(
             st.session_state.uthmani_script, default_moshaf
         )
