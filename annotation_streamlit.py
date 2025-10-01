@@ -210,7 +210,8 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
     phonetic_script = None
     st.subheader("Phonetic Transcription")
     if st.button("Generate Phonetic Transcription"):
-        st.session_state.gen_ph_script_pressed = True
+        # Toggle the flag to force re-render of the text area
+        st.session_state.gen_ph_script_pressed = not st.session_state.gen_ph_script_pressed
         phonetizer_out = quran_phonetizer(
             st.session_state.uthmani_script, default_moshaf
         )
@@ -223,14 +224,15 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
             sifat_data.append(sifa.model_dump())
 
         st.session_state.sifat_df = pd.DataFrame(sifat_data)
-        st.rerun()
+        # No need to call st.rerun() here as the button press will trigger a rerun
 
     # Always show the phonetic script editor, and update its value from session state
+    # Use a key that changes when the button is pressed to force re-render
     phonetic_script_value = st.text_area(
         "Phonetic Script",
         value=st.session_state.phonetic_script,
         width=300,
-        key="phonetic_script_editor",
+        key=f"phonetic_script_editor_{st.session_state.gen_ph_script_pressed}",
     )
     # Update session state whenever the text area content changes
     if phonetic_script_value != st.session_state.phonetic_script:
