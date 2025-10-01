@@ -223,16 +223,18 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
             sifat_data.append(sifa.model_dump())
 
         st.session_state.sifat_df = pd.DataFrame(sifat_data)
-        # st.rerun()
+        st.rerun()
 
-    # Editable phonetic script
-    # if st.session_state.gen_ph_script_pressed:
-    st.session_state.phonetic_script = st.text_area(
+    # Always show the phonetic script editor, and update its value from session state
+    phonetic_script_value = st.text_area(
         "Phonetic Script",
         value=st.session_state.phonetic_script,
         width=300,
         key="phonetic_script_editor",
     )
+    # Update session state whenever the text area content changes
+    if phonetic_script_value != st.session_state.phonetic_script:
+        st.session_state.phonetic_script = phonetic_script_value
 
     annotate_sifat()
 
