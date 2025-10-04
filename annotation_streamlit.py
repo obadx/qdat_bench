@@ -513,7 +513,7 @@ def annotate_addional_qdabenc_fields():
             st.session_state.lang_sett.noon_mokhfah_len,
             options=list(NoonMokhfahLen),
             format_func=lambda x: {
-                NoonMokhfahLen.NOON: st.session_state.lang_sett.not_maghnoon,
+                NoonMokhfahLen.NOON: st.session_state.lang_sett.noon,
                 NoonMokhfahLen.PARTIAL: st.session_state.lang_sett.partial,
                 NoonMokhfahLen.COMPLETE: st.session_state.lang_sett.complete,
             }[x],
