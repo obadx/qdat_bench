@@ -333,8 +333,7 @@ def annotate_sifat():
                     )
                     st.rerun()
 
-        # Define options for each column
-        # TODO: inferthem from SifaOutput
+        # Define options for each column with English values but display translated text
         column_options = {
             "hams_or_jahr": ["hams", "jahr"],
             "shidda_or_rakhawa": ["shadeed", "between", "rikhw"],
@@ -347,6 +346,32 @@ def annotate_sifat():
             "istitala": ["mostateel", "not_mostateel"],
             "ghonna": ["maghnoon", "not_maghnoon"],
         }
+        
+        # Create a mapping from English values to their translated versions
+        translation_map = {
+            "hams": st.session_state.lang_sett.hams,
+            "jahr": st.session_state.lang_sett.jahr,
+            "shadeed": st.session_state.lang_sett.shadeed,
+            "between": st.session_state.lang_sett.between,
+            "rikhw": st.session_state.lang_sett.rikhw,
+            "mofakham": st.session_state.lang_sett.mofakham,
+            "moraqaq": st.session_state.lang_sett.moraqaq,
+            "low_mofakham": st.session_state.lang_sett.low_mofakham,
+            "monfateh": st.session_state.lang_sett.monfateh,
+            "motbaq": st.session_state.lang_sett.motbaq,
+            "safeer": st.session_state.lang_sett.safeer,
+            "no_safeer": st.session_state.lang_sett.no_safeer,
+            "moqalqal": st.session_state.lang_sett.moqalqal,
+            "not_moqalqal": st.session_state.lang_sett.not_moqalqal,
+            "mokarar": st.session_state.lang_sett.mokarar,
+            "not_mokarar": st.session_state.lang_sett.not_mokarar,
+            "motafashie": st.session_state.lang_sett.motafashie,
+            "not_motafashie": st.session_state.lang_sett.not_motafashie,
+            "mostateel": st.session_state.lang_sett.mostateel,
+            "not_mostateel": st.session_state.lang_sett.not_mostateel,
+            "maghnoon": st.session_state.lang_sett.maghnoon,
+            "not_maghnoon": st.session_state.lang_sett.not_maghnoon,
+        }
 
         # Create a unique key for this editor instance
         editor_key = f"sifat_editor_{st.session_state.index}"
@@ -356,11 +381,15 @@ def annotate_sifat():
             st.session_state.sifat_df,
             column_config={
                 "row_index": st.column_config.NumberColumn(
-                    "Row", width="small", disabled=True
+                    st.session_state.lang_sett.progress, width="small", disabled=True
                 ),
-                "phoneme": st.column_config.TextColumn("Phoneme", width="small"),
+                "phoneme": st.column_config.TextColumn(st.session_state.lang_sett.phoneme, width="small"),
                 **{
-                    col: st.column_config.SelectboxColumn(col, options=options)
+                    col: st.column_config.SelectboxColumn(
+                        getattr(st.session_state.lang_sett, col, col),
+                        options=options,
+                        format_func=lambda x: translation_map.get(x, x)
+                    )
                     for col, options in column_options.items()
                 },
             },
@@ -392,7 +421,8 @@ def annotate_addional_qdabenc_fields():
         gender_index = 0 if st.session_state.gender == "male" else 1
     st.session_state.gender = st.radio(
         st.session_state.lang_sett.gender,
-        [st.session_state.lang_sett.male, st.session_state.lang_sett.female],
+        options=["male", "female"],
+        format_func=lambda x: st.session_state.lang_sett.male if x == "male" else st.session_state.lang_sett.female,
         index=gender_index,
     )
 
@@ -456,7 +486,11 @@ def annotate_addional_qdabenc_fields():
         st.session_state.noon_moshaddadah_len = st.selectbox(
             st.session_state.lang_sett.noon_moshaddadah_len,
             options=list(NoonMoshaddahLen),
-            format_func=lambda x: x.name,
+            format_func=lambda x: {
+                NoonMoshaddahLen.NO_GHONNAH: st.session_state.lang_sett.no_safeer,
+                NoonMoshaddahLen.PARTIAL: st.session_state.lang_sett.between,
+                NoonMoshaddahLen.COMPLETE: st.session_state.lang_sett.maghnoon
+            }[x],
             index=current_noon_moshaddadah_index,
         )
 
@@ -477,7 +511,11 @@ def annotate_addional_qdabenc_fields():
         st.session_state.noon_mokhfah_len = st.selectbox(
             st.session_state.lang_sett.noon_mokhfah_len,
             options=list(NoonMokhfahLen),
-            format_func=lambda x: x.name,
+            format_func=lambda x: {
+                NoonMokhfahLen.NOON: st.session_state.lang_sett.not_maghnoon,
+                NoonMokhfahLen.PARTIAL: st.session_state.lang_sett.between,
+                NoonMokhfahLen.COMPLETE: st.session_state.lang_sett.maghnoon
+            }[x],
             index=current_noon_mokhfah_index,
         )
 
@@ -493,7 +531,10 @@ def annotate_addional_qdabenc_fields():
     st.session_state.qalqalah = st.selectbox(
         st.session_state.lang_sett.qalqalah_field,
         options=list(Qalqalah),
-        format_func=lambda x: x.name,
+        format_func=lambda x: {
+            Qalqalah.NO_QALQALH: st.session_state.lang_sett.not_moqalqal,
+            Qalqalah.HAS_QALQALAH: st.session_state.lang_sett.moqalqal
+        }[x],
         index=current_qalqalah_index,
     )
 
