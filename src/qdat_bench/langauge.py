@@ -317,11 +317,15 @@ class ArabicLang(Language):
 
 
 # Language mapping
-LANGUAGES = {"english": EnglishLang, "arabic": ArabicLang}
+LANGUAGES = {"english": EnglishLang(), "arabic": ArabicLang()}
+
+
+def get_all_languages() -> dict[str, Language]:
+    return LANGUAGES
 
 
 def get_language(lang: Literal["english", "arabic"]) -> Language:
-    return LANGUAGES[lang]()
+    return LANGUAGES[lang]
 
 
 def map_attribute_to_language(

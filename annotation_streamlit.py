@@ -7,6 +7,7 @@ from pathlib import Path
 from quran_transcript import Aya, quran_phonetizer, MoshafAttributes, search, SifaOutput
 from datasets import load_dataset
 
+from qdat_bench.langauge import get_language, get_all_languages
 from qdat_bench.data_models import (
     QdataBenchItem,
     Qalqalah,
@@ -17,6 +18,8 @@ from qdat_bench.data_models import (
 
 def initialize():
     # Initialize session state
+    if "lang" not in st.session_state:
+        st.session_state.lang = "arabic"
     if "index" not in st.session_state:
         st.session_state.index = 0
     if "sura_idx" not in st.session_state:
@@ -51,6 +54,15 @@ def initialize():
     # Initialize annotations
     if not st.session_state.annotations:
         st.session_state.annotations = load_annotations()
+
+
+@st.cache_data
+def load_language_dict():
+    return get_all_languages()
+
+
+def load_language_settings():
+    st.session_state.lang_sett = load_language_dict()[st.session_state.lang]
 
 
 # Load dataset
@@ -731,7 +743,16 @@ def main():
     load_item_to_session_state(item)
 
     # App layout
-    st.title("Quran Audio Transcription Annotation Tool")
+    select_en_lang = st.toggle(
+        "Select English", value="english" == st.session_state.lang
+    )
+    if select_en_lang:
+        st.session_state.lang = "english"
+    else:
+        st.session_state.lang = "arabic"
+    load_language_settings()
+
+    st.title(st.session_state.lang_sett.title)
     display_item(item, ids)
 
     uthmani_script = select_quran_text(
