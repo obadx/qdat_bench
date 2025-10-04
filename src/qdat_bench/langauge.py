@@ -107,6 +107,11 @@ class Language(BaseModel):
     istitala: str
     ghonna: str
 
+    # Ghonnah Len
+    complete: str
+    partial: str
+    noon: str
+
 
 class EnglishLang(Language):
     title: str = "Quran Audio Transcription Annotation Tool"
@@ -211,6 +216,10 @@ class EnglishLang(Language):
     istitala: str = "istitala"
     ghonna: str = "ghonna"
 
+    complete: str = "complete"
+    partial: str = "partial"
+    noon: str = "noon"
+
 
 class ArabicLang(Language):
     title: str = "أداة تدوين تسجيلات القرآن الكريم"
@@ -314,6 +323,10 @@ class ArabicLang(Language):
     tafashie: str = "تفشي"
     istitala: str = "استطالة"
     ghonna: str = "غنة"
+
+    complete: str = "كامل"
+    partial: str = "ناقص"
+    noon: str = "نون"
 
 
 # Language mapping

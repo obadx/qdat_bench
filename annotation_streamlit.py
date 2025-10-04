@@ -346,7 +346,7 @@ def annotate_sifat():
             "istitala": ["mostateel", "not_mostateel"],
             "ghonna": ["maghnoon", "not_maghnoon"],
         }
-        
+
         # Create a mapping from English values to their translated versions
         translation_map = {
             "hams": st.session_state.lang_sett.hams,
@@ -383,12 +383,14 @@ def annotate_sifat():
                 "row_index": st.column_config.NumberColumn(
                     st.session_state.lang_sett.progress, width="small", disabled=True
                 ),
-                "phoneme": st.column_config.TextColumn(st.session_state.lang_sett.phoneme, width="small"),
+                "phoneme": st.column_config.TextColumn(
+                    st.session_state.lang_sett.phoneme, width="small"
+                ),
                 **{
                     col: st.column_config.SelectboxColumn(
                         getattr(st.session_state.lang_sett, col, col),
                         options=options,
-                        format_func=lambda x: translation_map.get(x, x)
+                        format_func=lambda x: translation_map.get(x, x),
                     )
                     for col, options in column_options.items()
                 },
@@ -422,7 +424,9 @@ def annotate_addional_qdabenc_fields():
     st.session_state.gender = st.radio(
         st.session_state.lang_sett.gender,
         options=["male", "female"],
-        format_func=lambda x: st.session_state.lang_sett.male if x == "male" else st.session_state.lang_sett.female,
+        format_func=lambda x: st.session_state.lang_sett.male
+        if x == "male"
+        else st.session_state.lang_sett.female,
         index=gender_index,
     )
 
@@ -487,9 +491,9 @@ def annotate_addional_qdabenc_fields():
             st.session_state.lang_sett.noon_moshaddadah_len,
             options=list(NoonMoshaddahLen),
             format_func=lambda x: {
-                NoonMoshaddahLen.NO_GHONNAH: st.session_state.lang_sett.no_safeer,
-                NoonMoshaddahLen.PARTIAL: st.session_state.lang_sett.between,
-                NoonMoshaddahLen.COMPLETE: st.session_state.lang_sett.maghnoon
+                NoonMoshaddahLen.NO_GHONNAH: st.session_state.lang_sett.not_maghnoon,
+                NoonMoshaddahLen.PARTIAL: st.session_state.lang_sett.partial,
+                NoonMoshaddahLen.COMPLETE: st.session_state.lang_sett.complete,
             }[x],
             index=current_noon_moshaddadah_index,
         )
@@ -513,8 +517,8 @@ def annotate_addional_qdabenc_fields():
             options=list(NoonMokhfahLen),
             format_func=lambda x: {
                 NoonMokhfahLen.NOON: st.session_state.lang_sett.not_maghnoon,
-                NoonMokhfahLen.PARTIAL: st.session_state.lang_sett.between,
-                NoonMokhfahLen.COMPLETE: st.session_state.lang_sett.maghnoon
+                NoonMokhfahLen.PARTIAL: st.session_state.lang_sett.partial,
+                NoonMokhfahLen.COMPLETE: st.session_state.lang_sett.complete,
             }[x],
             index=current_noon_mokhfah_index,
         )
@@ -533,7 +537,7 @@ def annotate_addional_qdabenc_fields():
         options=list(Qalqalah),
         format_func=lambda x: {
             Qalqalah.NO_QALQALH: st.session_state.lang_sett.not_moqalqal,
-            Qalqalah.HAS_QALQALAH: st.session_state.lang_sett.moqalqal
+            Qalqalah.HAS_QALQALAH: st.session_state.lang_sett.moqalqal,
         }[x],
         index=current_qalqalah_index,
     )
