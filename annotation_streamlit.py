@@ -401,15 +401,12 @@ def annotate_sifat():
             disabled=["row_index"],  # Make row index non-editable
         )
 
-        # Update the session state directly when the editor key changes
-        if editor_key != st.session_state.last_editor_key:
+        # Update the session state if the dataframe has changed
+        # Don't trigger a rerun here as it causes infinite loops
+        if not edited_df.equals(st.session_state.sifat_df):
+            st.session_state.sifat_df = edited_df
+            # Update the last editor key to track changes
             st.session_state.last_editor_key = editor_key
-        else:
-            # Only update if the dataframe has actually changed
-            if not edited_df.equals(st.session_state.sifat_df):
-                st.session_state.sifat_df = edited_df
-                # Force a rerun to immediately reflect changes
-                st.rerun()
 
 
 def annotate_addional_qdabenc_fields():
