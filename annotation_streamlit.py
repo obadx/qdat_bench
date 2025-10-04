@@ -227,15 +227,16 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
 
     # Always show the phonetic script editor, and update its value from session state
     # Use a key that changes when the button is pressed to force re-render
-    phonetic_script_value = st.text_area(
-        "Phonetic Script",
-        value=st.session_state.phonetic_script,
-        width=300,
-        key=f"phonetic_script_editor_{st.session_state.gen_ph_script_pressed}",
-    )
-    # Update session state whenever the text area content changes
-    if phonetic_script_value != st.session_state.phonetic_script:
-        st.session_state.phonetic_script = phonetic_script_value
+    if st.session_state.phonetic_script:
+        phonetic_script_value = st.text_area(
+            "Phonetic Script",
+            value=st.session_state.phonetic_script,
+            width=300,
+            key=f"phonetic_script_editor_{st.session_state.gen_ph_script_pressed}",
+        )
+        # Update session state whenever the text area content changes
+        if phonetic_script_value != st.session_state.phonetic_script:
+            st.session_state.phonetic_script = phonetic_script_value
 
     annotate_sifat()
 
