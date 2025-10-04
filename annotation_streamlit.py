@@ -78,19 +78,12 @@ def get_sura_info():
 
 
 # Load existing annotations
-def load_annotations():
+def load_annotations() -> dict:
     annotations_file = Path("annotations.json")
     if annotations_file.exists():
         with open(annotations_file, "r", encoding="utf-8") as f:
             raw_annotations = json.load(f)
-        # Convert sifat lists to SifaOutput instances
-        for item_id, annotation in raw_annotations.items():
-            if "sifat" in annotation:
-                annotation["sifat"] = [
-                    SifaOutput(**sifa) if isinstance(sifa, dict) else sifa
-                    for sifa in annotation["sifat"]
-                ]
-        return raw_annotations
+            return raw_annotations
     return {}
 
 
@@ -98,10 +91,15 @@ def load_annotations():
 def save_annotation(item_id, annotation):
     # Update session state
     st.session_state.annotations[item_id] = annotation
+    # validatiing annotation before saveing
+    saved_annotations = {
+        k: QdataBenchItem(**v) for k, v in st.session_state.annotations.items()
+    }
+    saved_annotations = {k: v.model_dump() for k, v in saved_annotations.items()}
 
     # Save to file
     with open("annotations.json", "w", encoding="utf-8") as f:
-        json.dump(st.session_state.annotations, f, ensure_ascii=False, indent=2)
+        json.dump(saved_annotations, f, ensure_ascii=False, indent=2)
 
 
 def load_item_to_session_state(item):
@@ -374,11 +372,9 @@ def annotate_addional_qdabenc_fields():
     # Update gender using the return value
     # Handle case where gender might not be set yet
     gender_index = 0
-    if hasattr(st.session_state, 'gender') and st.session_state.gender:
+    if hasattr(st.session_state, "gender") and st.session_state.gender:
         gender_index = 0 if st.session_state.gender == "male" else 1
-    st.session_state.gender = st.radio(
-        "Gender", ["male", "female"], index=gender_index
-    )
+    st.session_state.gender = st.radio("Gender", ["male", "female"], index=gender_index)
 
     st.subheader("Madd Lengths")
     cols = st.columns(4)
@@ -413,9 +409,14 @@ def annotate_addional_qdabenc_fields():
     ghonnah_cols = st.columns(2)
     with ghonnah_cols[1]:
         # Get current index for noon_moshaddadah_len
-        if hasattr(st.session_state, 'noon_moshaddadah_len') and st.session_state.noon_moshaddadah_len is not None:
+        if (
+            hasattr(st.session_state, "noon_moshaddadah_len")
+            and st.session_state.noon_moshaddadah_len is not None
+        ):
             try:
-                current_noon_moshaddadah_index = list(NoonMoshaddahLen).index(st.session_state.noon_moshaddadah_len)
+                current_noon_moshaddadah_index = list(NoonMoshaddahLen).index(
+                    st.session_state.noon_moshaddadah_len
+                )
             except ValueError:
                 current_noon_moshaddadah_index = 0
         else:
@@ -424,14 +425,19 @@ def annotate_addional_qdabenc_fields():
             "Noon Moshaddadah Len",
             options=list(NoonMoshaddahLen),
             format_func=lambda x: x.name,
-            index=current_noon_moshaddadah_index
+            index=current_noon_moshaddadah_index,
         )
 
     with ghonnah_cols[0]:
         # Get current index for noon_mokhfah_len
-        if hasattr(st.session_state, 'noon_mokhfah_len') and st.session_state.noon_mokhfah_len is not None:
+        if (
+            hasattr(st.session_state, "noon_mokhfah_len")
+            and st.session_state.noon_mokhfah_len is not None
+        ):
             try:
-                current_noon_mokhfah_index = list(NoonMokhfahLen).index(st.session_state.noon_mokhfah_len)
+                current_noon_mokhfah_index = list(NoonMokhfahLen).index(
+                    st.session_state.noon_mokhfah_len
+                )
             except ValueError:
                 current_noon_mokhfah_index = 0
         else:
@@ -440,12 +446,12 @@ def annotate_addional_qdabenc_fields():
             "Noon Mokhfah Len",
             options=list(NoonMokhfahLen),
             format_func=lambda x: x.name,
-            index=current_noon_mokhfah_index
+            index=current_noon_mokhfah_index,
         )
 
     st.subheader("Qalqalah")
     # Get current index for qalqalah
-    if hasattr(st.session_state, 'qalqalah') and st.session_state.qalqalah is not None:
+    if hasattr(st.session_state, "qalqalah") and st.session_state.qalqalah is not None:
         try:
             current_qalqalah_index = list(Qalqalah).index(st.session_state.qalqalah)
         except ValueError:
@@ -453,10 +459,10 @@ def annotate_addional_qdabenc_fields():
     else:
         current_qalqalah_index = 0
     st.session_state.qalqalah = st.selectbox(
-        "Qalqalah", 
-        options=list(Qalqalah), 
+        "Qalqalah",
+        options=list(Qalqalah),
         format_func=lambda x: x.name,
-        index=current_qalqalah_index
+        index=current_qalqalah_index,
     )
 
 
@@ -465,6 +471,22 @@ def reset_item_session_state():
     st.session_state.sifat_df = pd.DataFrame()
     st.session_state.last_editor_key = ""
     st.session_state.edit_mode = False
+
+    # Additional values
+    for key in [
+        "qalo_alif_len ",
+        "qalo_waw_len ",
+        "laa_alif_len ",
+        "allam_alif_len ",
+    ]:
+        st.session_state[key] = 2
+    st.session_state.separate_madd = 4
+    st.session_state.madd_aared_len = 4
+
+    st.session_state.gender = "female"
+    st.session_state.noon_mokhfah_len = NoonMokhfahLen.COMPLETE
+    st.session_state.noon_moshaddadah_len = NoonMoshaddahLen.COMPLETE
+    st.session_state.qalqalah = Qalqalah.HAS_QALQALAH
 
 
 def save_navigatoin_bar(item, ids):
