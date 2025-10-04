@@ -709,25 +709,25 @@ def annotation_managment_view(ds, ids):
         # Provide download link
         with open("annotations.json", "r", encoding="utf-8") as f:
             st.download_button(
-                label="Download JSON",
+                label=st.session_state.lang_sett.download_json,
                 data=f,
                 file_name="annotations.json",
                 mime="application/json",
             )
     else:
-        st.info("No annotations have been saved yet.")
+        st.info(st.session_state.lang_sett.no_annotations)
 
     # Add a button to clear all annotations
-    if st.button("Clear All Annotations"):
+    if st.button(st.session_state.lang_sett.clear_annotations):
         if st.session_state.annotations:
             st.session_state.annotations = {}
             Path("annotations.json").unlink(missing_ok=True)
             st.session_state.phonetic_script = ""
             st.session_state.sifat_df = pd.DataFrame()
-            st.success("All annotations cleared")
+            st.success(st.session_state.lang_sett.all_annotations_cleared)
             st.rerun()
         else:
-            st.info("No annotations to clear")
+            st.info(st.session_state.lang_sett.no_annotations)
 
 
 def main():
