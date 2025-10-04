@@ -163,7 +163,10 @@ def display_item(item, ids):
     with col3:
         st.metric(st.session_state.lang_sett.original_id, item["original_id"])
     with col4:
-        st.metric(st.session_state.lang_sett.progress, f"{st.session_state.index + 1}/{len(ids)}")
+        st.metric(
+            st.session_state.lang_sett.progress,
+            f"{st.session_state.index + 1}/{len(ids)}",
+        )
 
     # Show annotation status
     if item["id"] in st.session_state.annotations:
@@ -388,16 +391,19 @@ def annotate_addional_qdabenc_fields():
     if hasattr(st.session_state, "gender") and st.session_state.gender:
         gender_index = 0 if st.session_state.gender == "male" else 1
     st.session_state.gender = st.radio(
-        st.session_state.lang_sett.gender, 
-        [st.session_state.lang_sett.male, st.session_state.lang_sett.female], 
-        index=gender_index
+        st.session_state.lang_sett.gender,
+        [st.session_state.lang_sett.male, st.session_state.lang_sett.female],
+        index=gender_index,
     )
 
     st.subheader(st.session_state.lang_sett.madd_lengths)
     cols = st.columns(4)
     with cols[0]:
         st.session_state.qalo_alif_len = st.slider(
-            st.session_state.lang_sett.qalo_alif_len, 0, 8, st.session_state.qalo_alif_len
+            st.session_state.lang_sett.qalo_alif_len,
+            0,
+            8,
+            st.session_state.qalo_alif_len,
         )
     with cols[1]:
         st.session_state.qalo_waw_len = st.slider(
@@ -409,17 +415,26 @@ def annotate_addional_qdabenc_fields():
         )
     with cols[3]:
         st.session_state.separate_madd = st.slider(
-            st.session_state.lang_sett.separate_madd, 0, 8, st.session_state.separate_madd
+            st.session_state.lang_sett.separate_madd,
+            0,
+            8,
+            st.session_state.separate_madd,
         )
 
     cols = st.columns(3)
     with cols[0]:
         st.session_state.allam_alif_len = st.slider(
-            st.session_state.lang_sett.allam_alif_len, 0, 8, st.session_state.allam_alif_len
+            st.session_state.lang_sett.allam_alif_len,
+            0,
+            8,
+            st.session_state.allam_alif_len,
         )
     with cols[1]:
         st.session_state.madd_aared_len = st.slider(
-            st.session_state.lang_sett.madd_aared_len, 0, 8, st.session_state.madd_aared_len
+            st.session_state.lang_sett.madd_aared_len,
+            0,
+            8,
+            st.session_state.madd_aared_len,
         )
 
     st.subheader(st.session_state.lang_sett.ghonnah)
@@ -512,7 +527,10 @@ def save_navigatoin_bar(item, ids):
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        if st.button(st.session_state.lang_sett.previous) and st.session_state.index > 0:
+        if (
+            st.button(st.session_state.lang_sett.previous)
+            and st.session_state.index > 0
+        ):
             st.session_state.index -= 1
             # Reset for the new item
             reset_item_session_state()
@@ -553,7 +571,9 @@ def save_navigatoin_bar(item, ids):
 
             # Save to JSON file
             save_annotation(item["id"], bench_item.model_dump())
-            st.success(f"{st.session_state.lang_sett.annotation_saved} for ID: {item['id']}")
+            st.success(
+                f"{st.session_state.lang_sett.annotation_saved} for ID: {item['id']}"
+            )
             st.session_state.edit_mode = False
 
     with col3:
@@ -597,7 +617,10 @@ def save_navigatoin_bar(item, ids):
             st.write("")  # Empty space for layout
 
     with col4:
-        if st.button(st.session_state.lang_sett.next) and st.session_state.index < len(ids) - 1:
+        if (
+            st.button(st.session_state.lang_sett.next)
+            and st.session_state.index < len(ids) - 1
+        ):
             st.session_state.index += 1
             # Reset for the new item
             reset_item_session_state()
