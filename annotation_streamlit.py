@@ -152,24 +152,24 @@ def load_item_to_session_state(item):
 
 # Display audio and metadata
 def display_item(item, ids):
-    st.header("Audio Sample")
+    st.header(st.session_state.lang_sett.audio_sample)
     st.audio(item["audio"]["array"], sample_rate=item["audio"]["sampling_rate"])
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("ID", item["id"])
+        st.metric(st.session_state.lang_sett.id, item["id"])
     with col2:
-        st.metric("Source", item["source"])
+        st.metric(st.session_state.lang_sett.source, item["source"])
     with col3:
-        st.metric("Original ID", item["original_id"])
+        st.metric(st.session_state.lang_sett.original_id, item["original_id"])
     with col4:
-        st.metric("Progress", f"{st.session_state.index + 1}/{len(ids)}")
+        st.metric(st.session_state.lang_sett.progress, f"{st.session_state.index + 1}/{len(ids)}")
 
     # Show annotation status
     if item["id"] in st.session_state.annotations:
-        st.success("✓ Annotated")
+        st.success(st.session_state.lang_sett.annotated)
     else:
-        st.info("Not annotated")
+        st.info(st.session_state.lang_sett.not_annotated)
 
 
 def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
@@ -179,10 +179,10 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
         str: Uthmani text
     """
     # Quran reference selection
-    st.header("Quran Reference")
+    st.header(st.session_state.lang_sett.quran_reference)
 
     sura_idx = st.selectbox(
-        "Sura",
+        st.session_state.lang_sett.sura,
         options=list(range(1, 115)),
         format_func=lambda x: f"{x}. {sura_idx_to_name[x]}",
         # index=st.session_state.sura_idx - 1,
@@ -190,7 +190,7 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
     max_aya = sura_to_aya_count[sura_idx]
     st.session_state.start_aya.set(sura_idx, max_aya // 2)
     search_text = st.text_input(
-        "Enter search text",
+        st.session_state.lang_sett.enter_search_text,
         value=st.session_state.start_aya.set_new(sura_idx, 1).get().imlaey,
     )
     search_out = search(
@@ -206,7 +206,7 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
     else:
         uthmani_script = search_out[0].uthmani_script
 
-    st.subheader("Uthmani Script")
+    st.subheader(st.session_state.lang_sett.uthmani_script)
     st.write(uthmani_script)
 
     # Update session state
@@ -217,8 +217,8 @@ def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
 
 # Phonetization
 def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttributes):
-    st.subheader("Phonetic Transcription")
-    if st.button("Generate Phonetic Transcription"):
+    st.subheader(st.session_state.lang_sett.phonetic_transcription)
+    if st.button(st.session_state.lang_sett.generate_phonetic_transcription):
         # Toggle the flag to force re-render of the text area
         st.session_state.gen_ph_script_pressed = (
             not st.session_state.gen_ph_script_pressed
@@ -241,7 +241,7 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
     # Use a key that changes when the button is pressed to force re-render
     if st.session_state.phonetic_script:
         phonetic_script_value = st.text_area(
-            "Phonetic Script",
+            st.session_state.lang_sett.phonetic_script,
             value=st.session_state.phonetic_script,
             width=300,
             key=f"phonetic_script_editor_{st.session_state.gen_ph_script_pressed}",
@@ -256,7 +256,7 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
 def annotate_sifat():
     # Editable sifat table
     if not st.session_state.sifat_df.empty:
-        st.subheader("Sifat Table")
+        st.subheader(st.session_state.lang_sett.sifat_table)
 
         # Add row index column if it doesn't exist
         if "row_index" not in st.session_state.sifat_df.columns:
@@ -267,7 +267,7 @@ def annotate_sifat():
         # Add row operations
         col_add, col_add_pos, col_del = st.columns(3)
         with col_add:
-            if st.button("➕ Add Row at End"):
+            if st.button("➕ " + st.session_state.lang_sett.add_row_at_end):
                 # Add a new empty row at the end
                 new_row = {
                     col: ""
@@ -284,11 +284,11 @@ def annotate_sifat():
         with col_add_pos:
             if len(st.session_state.sifat_df) > 0:
                 insert_position = st.selectbox(
-                    "Insert after row",
+                    st.session_state.lang_sett.insert_after_row,
                     options=list(range(len(st.session_state.sifat_df))),
                     format_func=lambda x: f"After row {x + 1}",
                 )
-                if st.button("➕ Insert Row"):
+                if st.button("➕ " + st.session_state.lang_sett.insert_row):
                     # Split the dataframe and insert new row
                     new_row = {
                         col: ""
@@ -316,11 +316,11 @@ def annotate_sifat():
         with col_del:
             if len(st.session_state.sifat_df) > 0:
                 row_to_delete = st.selectbox(
-                    "Select row to delete",
+                    st.session_state.lang_sett.select_row_to_delete,
                     options=list(range(len(st.session_state.sifat_df))),
                     format_func=lambda x: f"Row {x + 1}",
                 )
-                if st.button("➖ Delete Selected Row"):
+                if st.button("➖ " + st.session_state.lang_sett.delete_selected_row):
                     st.session_state.sifat_df = st.session_state.sifat_df.drop(
                         st.session_state.sifat_df.index[row_to_delete]
                     ).reset_index(drop=True)
@@ -380,45 +380,49 @@ def annotate_sifat():
 
 def annotate_addional_qdabenc_fields():
     # QdataBenchItem fields
-    st.header("QdataBenchItem Annotation")
+    st.header(st.session_state.lang_sett.qdat_bench_annotation)
 
     # Update gender using the return value
     # Handle case where gender might not be set yet
     gender_index = 0
     if hasattr(st.session_state, "gender") and st.session_state.gender:
         gender_index = 0 if st.session_state.gender == "male" else 1
-    st.session_state.gender = st.radio("Gender", ["male", "female"], index=gender_index)
+    st.session_state.gender = st.radio(
+        st.session_state.lang_sett.gender, 
+        [st.session_state.lang_sett.male, st.session_state.lang_sett.female], 
+        index=gender_index
+    )
 
-    st.subheader("Madd Lengths")
+    st.subheader(st.session_state.lang_sett.madd_lengths)
     cols = st.columns(4)
     with cols[0]:
         st.session_state.qalo_alif_len = st.slider(
-            "Qalo Alif Len", 0, 8, st.session_state.qalo_alif_len
+            st.session_state.lang_sett.qalo_alif_len, 0, 8, st.session_state.qalo_alif_len
         )
     with cols[1]:
         st.session_state.qalo_waw_len = st.slider(
-            "Qalo Waw Len", 0, 8, st.session_state.qalo_waw_len
+            st.session_state.lang_sett.qalo_waw_len, 0, 8, st.session_state.qalo_waw_len
         )
     with cols[2]:
         st.session_state.laa_alif_len = st.slider(
-            "Laa Alif Len", 0, 8, st.session_state.laa_alif_len
+            st.session_state.lang_sett.laa_alif_len, 0, 8, st.session_state.laa_alif_len
         )
     with cols[3]:
         st.session_state.separate_madd = st.slider(
-            "Separate Madd", 0, 8, st.session_state.separate_madd
+            st.session_state.lang_sett.separate_madd, 0, 8, st.session_state.separate_madd
         )
 
     cols = st.columns(3)
     with cols[0]:
         st.session_state.allam_alif_len = st.slider(
-            "Allam Alif Len", 0, 8, st.session_state.allam_alif_len
+            st.session_state.lang_sett.allam_alif_len, 0, 8, st.session_state.allam_alif_len
         )
     with cols[1]:
         st.session_state.madd_aared_len = st.slider(
-            "Madd Aared Len", 0, 8, st.session_state.madd_aared_len
+            st.session_state.lang_sett.madd_aared_len, 0, 8, st.session_state.madd_aared_len
         )
 
-    st.subheader("Ghonnah")
+    st.subheader(st.session_state.lang_sett.ghonnah)
     ghonnah_cols = st.columns(2)
     with ghonnah_cols[1]:
         # Get current index for noon_moshaddadah_len
@@ -435,7 +439,7 @@ def annotate_addional_qdabenc_fields():
         else:
             current_noon_moshaddadah_index = 0
         st.session_state.noon_moshaddadah_len = st.selectbox(
-            "Noon Moshaddadah Len",
+            st.session_state.lang_sett.noon_moshaddadah_len,
             options=list(NoonMoshaddahLen),
             format_func=lambda x: x.name,
             index=current_noon_moshaddadah_index,
@@ -456,13 +460,13 @@ def annotate_addional_qdabenc_fields():
         else:
             current_noon_mokhfah_index = 0
         st.session_state.noon_mokhfah_len = st.selectbox(
-            "Noon Mokhfah Len",
+            st.session_state.lang_sett.noon_mokhfah_len,
             options=list(NoonMokhfahLen),
             format_func=lambda x: x.name,
             index=current_noon_mokhfah_index,
         )
 
-    st.subheader("Qalqalah")
+    st.subheader(st.session_state.lang_sett.qalqalah)
     # Get current index for qalqalah
     if hasattr(st.session_state, "qalqalah") and st.session_state.qalqalah is not None:
         try:
@@ -472,7 +476,7 @@ def annotate_addional_qdabenc_fields():
     else:
         current_qalqalah_index = 0
     st.session_state.qalqalah = st.selectbox(
-        "Qalqalah",
+        st.session_state.lang_sett.qalqalah_field,
         options=list(Qalqalah),
         format_func=lambda x: x.name,
         index=current_qalqalah_index,
@@ -508,14 +512,14 @@ def save_navigatoin_bar(item, ids):
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        if st.button("Previous") and st.session_state.index > 0:
+        if st.button(st.session_state.lang_sett.previous) and st.session_state.index > 0:
             st.session_state.index -= 1
             # Reset for the new item
             reset_item_session_state()
             st.rerun()
 
     with col2:
-        if st.button("Save Annotation"):
+        if st.button(st.session_state.lang_sett.save_annotation):
             # Remove the row_index column before saving
             sifat_df_to_save = st.session_state.sifat_df.drop(
                 columns=["row_index"], errors="ignore"
@@ -549,13 +553,13 @@ def save_navigatoin_bar(item, ids):
 
             # Save to JSON file
             save_annotation(item["id"], bench_item.model_dump())
-            st.success(f"Annotation saved for ID: {item['id']}")
+            st.success(f"{st.session_state.lang_sett.annotation_saved} for ID: {item['id']}")
             st.session_state.edit_mode = False
 
     with col3:
         # Edit button for current item (only shown if annotation exists)
         if item["id"] in st.session_state.annotations:
-            if st.button("Edit Annotation", type="secondary"):
+            if st.button(st.session_state.lang_sett.edit_annotation, type="secondary"):
                 # Load the existing annotation
                 annotation = st.session_state.annotations[item["id"]]
                 st.session_state.phonetic_script = annotation.get(
@@ -593,7 +597,7 @@ def save_navigatoin_bar(item, ids):
             st.write("")  # Empty space for layout
 
     with col4:
-        if st.button("Next") and st.session_state.index < len(ids) - 1:
+        if st.button(st.session_state.lang_sett.next) and st.session_state.index < len(ids) - 1:
             st.session_state.index += 1
             # Reset for the new item
             reset_item_session_state()
@@ -603,11 +607,11 @@ def save_navigatoin_bar(item, ids):
 def annotation_managment_view(ds, ids):
     # Export annotations
     st.divider()
-    st.header("Annotations Management")
+    st.header(st.session_state.lang_sett.annotations_management)
 
     # Display current annotations with edit buttons
     if st.session_state.annotations:
-        st.subheader("Current Annotations")
+        st.subheader(st.session_state.lang_sett.annotations_management)
 
         # Create a list of annotations with edit buttons
         annotations_list = []
