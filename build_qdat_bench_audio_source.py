@@ -46,6 +46,7 @@ def chose_single_source(
         lambda ex: ex["original_id"] in ds_filtered_ids,
     )
     ds = ds.select_columns(selcted_columns)
+    ds = ds.map(lambda ex: {"gender": "male" if ex["gender"] == 1 else "female"})
 
     return ds
 
