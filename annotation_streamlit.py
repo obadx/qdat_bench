@@ -180,7 +180,7 @@ def display_item(item, ids):
             st.session_state.lang_sett.progress,
             f"{st.session_state.index + 1}/{len(ids)}",
         )
-    
+
     # Second row: 3 columns
     row2_col1, row2_col2, row2_col3 = st.columns(3)
     with row2_col1:
@@ -212,20 +212,9 @@ def display_item(item, ids):
 
     if st.button(st.session_state.lang_sett.jump_to_reciter):
         # Find the item with the matching source_id pattern
-        target_id = f"s{item_idx}_"
-        found_index = None
-        for idx, original_idx in enumerate(ids):
-            item_id = ds[original_idx]["id"]
-            if item_id.startswith(target_id):
-                found_index = idx
-                break
-        
-        if found_index is not None:
-            st.session_state.index = found_index
-            reset_item_session_state()
-            st.rerun()
-        else:
-            st.error(f"{st.session_state.lang_sett.no_item_found} {item_idx}")
+        st.session_state.index = item_idx
+        reset_item_session_state()
+        st.rerun()
 
 
 def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
