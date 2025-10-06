@@ -14,7 +14,6 @@ from qdat_bench.data_models import (
     NoonMokhfahLen,
     NoonMoshaddahLen,
 )
-from build_qdat_bench_audio_source import chose_single_source
 
 
 def initialize():
@@ -69,17 +68,9 @@ def load_language_settings():
 # Load dataset
 @st.cache_resource
 def load_audio_dataset():
-    seed = 42
-    qdata_path = "/home/abdullah/Downloads/qdat/"
-    ds = load_dataset("audiofolder", data_dir=qdata_path)
-    print("Before Filteration")
-    print(ds)
+    ds = load_dataset("obadx/qdat_bench")
 
-    ds = chose_single_source(ds["train"], seed=seed)
-    print("After Filteration")
-    print(ds)
-
-    return ds, list(range(len(ds)))
+    return ds["train"], list(range(len(ds)))
 
     # ds = load_dataset("obadx/ood_muaalem_test", split="train")
     # rng = np.random.default_rng(seed=42)
