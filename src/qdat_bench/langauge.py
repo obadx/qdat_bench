@@ -113,6 +113,12 @@ class Language(BaseModel):
     partial: str
     noon: str
 
+    # Navigator
+    navigator: str
+    enter_reciter_id: str
+    jump_to_reciter: str
+    no_item_found: str
+
 
 class EnglishLang(Language):
     title: str = "Quran Audio Transcription Annotation Tool"
@@ -222,6 +228,12 @@ class EnglishLang(Language):
     partial: str = "partial"
     noon: str = "noon"
 
+    # Navigator
+    navigator: str = "Navigator"
+    enter_reciter_id: str = "Enter Reciter ID (x in 'sx_y' format)"
+    jump_to_reciter: str = "Jump to Reciter"
+    no_item_found: str = "No item found with reciter ID"
+
 
 class ArabicLang(Language):
     title: str = "أداة تدوين تسجيلات القرآن الكريم"
@@ -330,6 +342,12 @@ class ArabicLang(Language):
     complete: str = "كامل"
     partial: str = "ناقص"
     noon: str = "نون"
+
+    # Navigator
+    navigator: str = "المتصفح"
+    enter_reciter_id: str = "أدخل معرف القارئ (x في 'sx_y' تنسيق)"
+    jump_to_reciter: str = "الانتقال إلى القارئ"
+    no_item_found: str = "لم يتم العثور على عنصر برقم القارئ"
 
 
 # Language mapping

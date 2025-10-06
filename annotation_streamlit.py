@@ -201,19 +201,31 @@ def display_item(item, ids):
         st.info(st.session_state.lang_sett.not_annotated)
 
     # Navigator to jump to specific source_id
-    st.subheader("Navigator")
+    st.subheader(st.session_state.lang_sett.navigator)
     item_idx = st.number_input(
-        "Enter Reciter ID (x in 'sx_y' format)",
+        st.session_state.lang_sett.enter_reciter_id,
         min_value=0,
-        max_value=len(ids),  # Adjust max_value based on your dataset
+        max_value=len(ids) - 1,
         value=0,
         step=1,
     )
 
-    if st.button("Jump to Reciter"):
-        st.session_state.index = item_idx
-        reset_item_session_state()
-        st.rerun()
+    if st.button(st.session_state.lang_sett.jump_to_reciter):
+        # Find the item with the matching source_id pattern
+        target_id = f"s{item_idx}_"
+        found_index = None
+        for idx, original_idx in enumerate(ids):
+            item_id = ds[original_idx]["id"]
+            if item_id.startswith(target_id):
+                found_index = idx
+                break
+        
+        if found_index is not None:
+            st.session_state.index = found_index
+            reset_item_session_state()
+            st.rerun()
+        else:
+            st.error(f"{st.session_state.lang_sett.no_item_found} {item_idx}")
 
 
 def select_quran_text(sura_idx_to_name, sura_to_aya_count) -> str:
