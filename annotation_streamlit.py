@@ -178,7 +178,7 @@ def display_item(item, ids):
         # Display gender
         gender_display = {
             "male": st.session_state.lang_sett.male,
-            "female": st.session_state.lang_sett.female
+            "female": st.session_state.lang_sett.female,
         }.get(item.get("gender", ""), item.get("gender", ""))
         st.metric(st.session_state.lang_sett.gender, gender_display)
     with col4:
@@ -431,18 +431,12 @@ def annotate_sifat():
             st.session_state.last_editor_key = editor_key
 
 
-def annotate_addional_qdabenc_fields():
+def annotate_addional_qdabenc_fields(item):
     # QdataBenchItem fields
     st.header(st.session_state.lang_sett.qdat_bench_annotation)
-    
+
     # Always use the gender from the dataset item
     st.session_state.gender = item.get("gender", "male")
-    # Display gender info (read-only)
-    gender_display = {
-        "male": st.session_state.lang_sett.male,
-        "female": st.session_state.lang_sett.female
-    }.get(st.session_state.gender, st.session_state.gender)
-    st.info(f"{st.session_state.lang_sett.gender}: {gender_display}")
 
     st.subheader(st.session_state.lang_sett.madd_lengths)
     cols = st.columns(4)
@@ -856,7 +850,7 @@ def main():
     )
     annotate_phonetic_script(uthmani_script, default_moshaf=default_moshaf)
 
-    annotate_addional_qdabenc_fields()
+    annotate_addional_qdabenc_fields(item)
 
     save_navigatoin_bar(item, ids)
 
