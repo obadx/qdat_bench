@@ -169,26 +169,30 @@ def display_item(item, ids):
     st.header(st.session_state.lang_sett.audio_sample)
     st.audio(item["audio"]["array"], sample_rate=item["audio"]["sampling_rate"])
 
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
-    with col1:
+    # First row: 3 columns
+    row1_col1, row1_col2, row1_col3 = st.columns(3)
+    with row1_col1:
         st.metric(st.session_state.lang_sett.id, item["id"])
-    with col2:
+    with row1_col2:
         st.metric(st.session_state.lang_sett.original_id, item["original_id"])
-    with col3:
+    with row1_col3:
+        st.metric(
+            st.session_state.lang_sett.progress,
+            f"{st.session_state.index + 1}/{len(ids)}",
+        )
+    
+    # Second row: 3 columns
+    row2_col1, row2_col2, row2_col3 = st.columns(3)
+    with row2_col1:
         # Display gender
         gender_display = {
             "male": st.session_state.lang_sett.male,
             "female": st.session_state.lang_sett.female,
         }.get(item.get("gender", ""), item.get("gender", ""))
         st.metric(st.session_state.lang_sett.gender, gender_display)
-    with col4:
+    with row2_col2:
         # Display age
         st.metric(st.session_state.lang_sett.age, item.get("age", "N/A"))
-    with col5:
-        st.metric(
-            st.session_state.lang_sett.progress,
-            f"{st.session_state.index + 1}/{len(ids)}",
-        )
 
     # Show annotation status
     if item["id"] in st.session_state.annotations:
