@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 
 from quran_transcript import Aya, quran_phonetizer, MoshafAttributes, search, SifaOutput
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 
 from qdat_bench.langauge import get_language, get_all_languages
 from qdat_bench.data_models import (
@@ -14,6 +14,7 @@ from qdat_bench.data_models import (
     NoonMokhfahLen,
     NoonMoshaddahLen,
 )
+from build_qdat_bench_audio_source import chose_single_source
 
 
 def initialize():
@@ -68,12 +69,24 @@ def load_language_settings():
 # Load dataset
 @st.cache_resource
 def load_audio_dataset():
-    ds = load_dataset("obadx/ood_muaalem_test", split="train")
-    rng = np.random.default_rng(seed=42)
-    ids = np.arange(len(ds))
-    rng.shuffle(ids)
-    ids = [int(i) for i in ids]  # Convert to integers
-    return ds, ids
+    seed = 42
+    qdata_path = "/home/abdullah/Downloads/qdat/"
+    ds = load_dataset("audiofolder", data_dir=qdata_path)
+    print("Before Filteration")
+    print(ds)
+
+    ds = chose_single_source(ds["train"], seed=seed)
+    print("After Filteration")
+    print(ds)
+
+    return ds, list(range(len(ds)))
+
+    # ds = load_dataset("obadx/ood_muaalem_test", split="train")
+    # rng = np.random.default_rng(seed=42)
+    # ids = np.arange(len(ds))
+    # rng.shuffle(ids)
+    # ids = [int(i) for i in ids]  # Convert to integers
+    # return ds, ids
 
 
 # Cache sura information
@@ -158,8 +171,8 @@ def display_item(item, ids):
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric(st.session_state.lang_sett.id, item["id"])
-    with col2:
-        st.metric(st.session_state.lang_sett.source, item["source"])
+    # with col2:
+    #     st.metric(st.session_state.lang_sett.source, item["source"])
     with col3:
         st.metric(st.session_state.lang_sett.original_id, item["original_id"])
     with col4:

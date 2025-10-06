@@ -15,11 +15,13 @@ authors = [
 description = "Benchmarking Some of Tajweed Rules to help creating New AI models to assist Muslim to learn reciting the Holy Quran using AI "
 readme = "README.md"
 dependencies = [
-  "datasets[audio]==3.3.2",
+  "datasets[audio]<4",
   "pyarrow>=20.0.0",
   "quran-transcript>=0.1.1",
   "huggingface_hub>=0.35.1",
   "pydantic>=2.11.9",
+  "python-dotenv>=1.1.1",
+  "numpy>=2.2.6",
 ]
 requires-python = ">=3.10"
 classifiers = [
