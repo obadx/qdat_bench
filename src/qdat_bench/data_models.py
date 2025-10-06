@@ -30,6 +30,7 @@ class QdataBenchItem(BaseModel):
     id: str = Field(description="Unique hash id for every element")
     original_id: str = Field(description="The item's id in the original dataset")
     gender: Literal["male", "female"]
+    age: int
 
     # General Tajeweed
     qalo_alif_len: MADD_LEN = Field(
