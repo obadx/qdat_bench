@@ -149,7 +149,8 @@ def load_item_to_session_state(item):
                 0, "row_index", range(1, len(st.session_state.sifat_df) + 1)
             )
         # Load other fields
-        st.session_state.gender = annotation_data.get("gender")
+        # Always use the gender from the dataset item, not from annotation
+        st.session_state.gender = item.get("gender", "male")
         st.session_state.qalo_alif_len = annotation_data.get("qalo_alif_len")
         st.session_state.qalo_waw_len = annotation_data.get("qalo_waw_len")
         st.session_state.laa_alif_len = annotation_data.get("laa_alif_len")
@@ -168,14 +169,22 @@ def display_item(item, ids):
     st.header(st.session_state.lang_sett.audio_sample)
     st.audio(item["audio"]["array"], sample_rate=item["audio"]["sampling_rate"])
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
         st.metric(st.session_state.lang_sett.id, item["id"])
-    # with col2:
-    #     st.metric(st.session_state.lang_sett.source, item["source"])
-    with col3:
+    with col2:
         st.metric(st.session_state.lang_sett.original_id, item["original_id"])
+    with col3:
+        # Display gender
+        gender_display = {
+            "male": st.session_state.lang_sett.male,
+            "female": st.session_state.lang_sett.female
+        }.get(item.get("gender", ""), item.get("gender", ""))
+        st.metric(st.session_state.lang_sett.gender, gender_display)
     with col4:
+        # Display age
+        st.metric(st.session_state.lang_sett.age, item.get("age", "N/A"))
+    with col5:
         st.metric(
             st.session_state.lang_sett.progress,
             f"{st.session_state.index + 1}/{len(ids)}",
@@ -425,20 +434,15 @@ def annotate_sifat():
 def annotate_addional_qdabenc_fields():
     # QdataBenchItem fields
     st.header(st.session_state.lang_sett.qdat_bench_annotation)
-
-    # Update gender using the return value
-    # Handle case where gender might not be set yet
-    gender_index = 0
-    if hasattr(st.session_state, "gender") and st.session_state.gender:
-        gender_index = 0 if st.session_state.gender == "male" else 1
-    st.session_state.gender = st.radio(
-        st.session_state.lang_sett.gender,
-        options=["male", "female"],
-        format_func=lambda x: st.session_state.lang_sett.male
-        if x == "male"
-        else st.session_state.lang_sett.female,
-        index=gender_index,
-    )
+    
+    # Always use the gender from the dataset item
+    st.session_state.gender = item.get("gender", "male")
+    # Display gender info (read-only)
+    gender_display = {
+        "male": st.session_state.lang_sett.male,
+        "female": st.session_state.lang_sett.female
+    }.get(st.session_state.gender, st.session_state.gender)
+    st.info(f"{st.session_state.lang_sett.gender}: {gender_display}")
 
     st.subheader(st.session_state.lang_sett.madd_lengths)
     cols = st.columns(4)
@@ -607,10 +611,12 @@ def save_navigatoin_bar(item, ids):
                 sifat_list.append(SifaOutput(**filtered_record))
 
             # Create QdataBenchItem instance
+            # Always use the gender from the dataset item
             bench_item = QdataBenchItem(
                 id=item["id"],
                 original_id=item["original_id"],
-                gender=st.session_state.gender,
+                gender=item.get("gender", "male"),
+                age=item.get("age", 0),  # Use age from dataset
                 qalo_alif_len=st.session_state.qalo_alif_len,
                 qalo_waw_len=st.session_state.qalo_waw_len,
                 laa_alif_len=st.session_state.laa_alif_len,

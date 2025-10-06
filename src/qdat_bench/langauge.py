@@ -47,6 +47,7 @@ class Language(BaseModel):
     select_row_to_delete: str
     delete_selected_row: str
     gender: str
+    age: str
     madd_lengths: str
     ghonnah: str
     qalqalah: str
@@ -156,6 +157,7 @@ class EnglishLang(Language):
     select_row_to_delete: str = "Select row to delete"
     delete_selected_row: str = "Delete Selected Row"
     gender: str = "Gender"
+    age: str = "Age"
     madd_lengths: str = "Madd Lengths"
     ghonnah: str = "Ghonnah"
     qalqalah: str = "Qalqalah"
@@ -264,6 +266,7 @@ class ArabicLang(Language):
     select_row_to_delete: str = "اختر صفًا للحذف"
     delete_selected_row: str = "حذف الصف المحدد"
     gender: str = "الجنس"
+    age: str = "العمر"
     madd_lengths: str = "أطوال المد"
     ghonnah: str = "الغنة"
     qalqalah: str = "القلقلة"
