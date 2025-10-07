@@ -119,6 +119,9 @@ class Language(BaseModel):
     jump_to_reciter: str
     no_item_found: str
 
+    # Error messages
+    phonetic_aligmnet_error_msg: str
+
 
 class EnglishLang(Language):
     title: str = "Quran Audio Transcription Annotation Tool"
@@ -234,6 +237,9 @@ class EnglishLang(Language):
     jump_to_reciter: str = "Jump to Reciter"
     no_item_found: str = "No item found with reciter ID"
 
+    # Error messages
+    phonetic_aligmnet_error_msg: str = "Phonecits chunking does not match"
+
 
 class ArabicLang(Language):
     title: str = "أداة تدوين تسجيلات القرآن الكريم"
@@ -348,6 +354,9 @@ class ArabicLang(Language):
     enter_reciter_id: str = "أدخل معرف القارئ (x في 'sx_y' تنسيق)"
     jump_to_reciter: str = "الانتقال إلى القارئ"
     no_item_found: str = "لم يتم العثور على عنصر برقم القارئ"
+
+    # Error messages
+    phonetic_aligmnet_error_msg: str = "خطأ: عدم تطابق  تقطيع الرسم الصوتي"
 
 
 # Language mapping

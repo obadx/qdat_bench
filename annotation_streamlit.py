@@ -633,7 +633,9 @@ def save_navigatoin_bar(item, ids):
             if not validate_phonetic_script_alignment(
                 st.session_state.phonetic_script, [s.phonemes for s in sifat_list]
             ):
-                st.toast("Phonecits chunking does not match", icon="🚫")
+                st.toast(
+                    st.session_state.lang_sett.phonetic_aligmnet_error_msg, icon="🚫"
+                )
             else:
                 # Create QdataBenchItem instance
                 # Always use the gender from the dataset item
