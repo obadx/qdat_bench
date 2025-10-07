@@ -4,7 +4,14 @@ import json
 import numpy as np
 from pathlib import Path
 
-from quran_transcript import Aya, quran_phonetizer, MoshafAttributes, search, SifaOutput
+from quran_transcript import (
+    Aya,
+    quran_phonetizer,
+    MoshafAttributes,
+    search,
+    SifaOutput,
+    chunck_phonemes,
+)
 from datasets import load_dataset, Dataset
 
 from qdat_bench.langauge import get_language, get_all_languages
@@ -68,9 +75,9 @@ def load_language_settings():
 # Load dataset
 @st.cache_resource
 def load_audio_dataset():
-    ds = load_dataset("obadx/qdat_bench")
+    ds = load_dataset("obadx/qdat_bench")["train"]
 
-    return ds["train"], list(range(len(ds)))
+    return ds, list(range(len(ds)))
 
     # ds = load_dataset("obadx/ood_muaalem_test", split="train")
     # rng = np.random.default_rng(seed=42)
@@ -585,6 +592,14 @@ def reset_item_session_state():
     st.session_state.qalqalah = Qalqalah.HAS_QALQALAH
 
 
+def validate_phonetic_script_alignment(
+    phonetic_script: str, sifat_phonemes: list[str]
+) -> bool:
+    phonetic_script_phonemes = chunck_phonemes(phonetic_script)
+
+    return sifat_phonemes == phonetic_script_phonemes
+
+
 def save_navigatoin_bar(item, ids):
     # Navigation and saving
     st.divider()
@@ -615,32 +630,38 @@ def save_navigatoin_bar(item, ids):
                 }
                 sifat_list.append(SifaOutput(**filtered_record))
 
-            # Create QdataBenchItem instance
-            # Always use the gender from the dataset item
-            bench_item = QdataBenchItem(
-                id=item["id"],
-                original_id=item["original_id"],
-                gender=item.get("gender", "male"),
-                age=item.get("age", 0),  # Use age from dataset
-                qalo_alif_len=st.session_state.qalo_alif_len,
-                qalo_waw_len=st.session_state.qalo_waw_len,
-                laa_alif_len=st.session_state.laa_alif_len,
-                separate_madd=st.session_state.separate_madd,
-                noon_moshaddadah_len=st.session_state.noon_moshaddadah_len,
-                noon_mokhfah_len=st.session_state.noon_mokhfah_len,
-                allam_alif_len=st.session_state.allam_alif_len,
-                madd_aared_len=st.session_state.madd_aared_len,
-                qalqalah=st.session_state.qalqalah,
-                phonetic_transcript=st.session_state.phonetic_script,
-                sifat=sifat_list,
-            )
+            if not validate_phonetic_script_alignment(
+                st.session_state.phonetic_script, [s.phonemes for s in sifat_list]
+            ):
+                st.toast("Phonecits chunking does not match", icon="🚫")
+            else:
+                # Create QdataBenchItem instance
+                # Always use the gender from the dataset item
+                bench_item = QdataBenchItem(
+                    id=item["id"],
+                    original_id=item["original_id"],
+                    gender=item.get("gender", "male"),
+                    age=item.get("age", 0),  # Use age from dataset
+                    qalo_alif_len=st.session_state.qalo_alif_len,
+                    qalo_waw_len=st.session_state.qalo_waw_len,
+                    laa_alif_len=st.session_state.laa_alif_len,
+                    separate_madd=st.session_state.separate_madd,
+                    noon_moshaddadah_len=st.session_state.noon_moshaddadah_len,
+                    noon_mokhfah_len=st.session_state.noon_mokhfah_len,
+                    allam_alif_len=st.session_state.allam_alif_len,
+                    madd_aared_len=st.session_state.madd_aared_len,
+                    qalqalah=st.session_state.qalqalah,
+                    phonetic_transcript=st.session_state.phonetic_script,
+                    sifat=sifat_list,
+                )
 
-            # Save to JSON file
-            save_annotation(item["id"], bench_item.model_dump())
-            st.success(
-                f"{st.session_state.lang_sett.annotation_saved} for ID: {item['id']}"
-            )
-            st.session_state.edit_mode = False
+                # Save to JSON file
+                save_annotation(item["id"], bench_item.model_dump())
+                st.toast(
+                    f"{st.session_state.lang_sett.annotation_saved} for ID: {item['id']}",
+                    icon="✅",
+                )
+                st.session_state.edit_mode = False
 
     with col3:
         # Edit button for current item (only shown if annotation exists)
