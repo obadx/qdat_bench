@@ -871,6 +871,8 @@ def main():
     st.title(st.session_state.lang_sett.title)
     display_item(item, ids)
 
+    annotate_addional_qdabenc_fields(item)
+
     uthmani_script = select_quran_text(
         sura_idx_to_name=sura_idx_to_name, sura_to_aya_count=sura_to_aya_count
     )
@@ -883,8 +885,6 @@ def main():
         madd_aared_len=4,
     )
     annotate_phonetic_script(uthmani_script, default_moshaf=default_moshaf)
-
-    annotate_addional_qdabenc_fields(item)
 
     save_navigatoin_bar(item, ids)
 
