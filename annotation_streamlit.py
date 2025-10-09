@@ -49,6 +49,14 @@ def initialize():
         st.session_state.item_to_edit = None
     if "gen_ph_script_pressed" not in st.session_state:
         st.session_state.gen_ph_script_pressed = False
+    if "ds" not in st.session_state:
+        try:
+            ds, ids = load_audio_dataset()
+            st.session_state.ds = ds
+            st.session_state.ids = ids
+        except Exception as e:
+            st.error(f"Error loading dataset: {e}")
+            st.stop()
 
     # Initialize QdataBenchItem fields
     qdat_item_fields = set(QdataBenchItem.model_fields.keys()) - {"id", "original_id"}
@@ -125,7 +133,9 @@ def save_annotation(item_id, annotation):
         json.dump(saved_annotations, f, ensure_ascii=False, indent=2)
 
 
-def load_item_to_session_state(item):
+def load_item_to_session_state():
+    item = get_current_item()
+    print(item["original_id"])
     # Check if current item has existing annotation
     if item["id"] in st.session_state.annotations and not st.session_state.edit_mode:
         annotation_data = st.session_state.annotations[item["id"]]
@@ -133,6 +143,7 @@ def load_item_to_session_state(item):
         st.session_state.phonetic_script = annotation_data.get(
             "phonetic_transcript", ""
         )
+        print(st.session_state.phonetic_script)
         # Convert sifat to DataFrame
         sifat_list = annotation_data.get("sifat", [])
         st.session_state.sifat_df = pd.DataFrame(
@@ -163,7 +174,10 @@ def load_item_to_session_state(item):
 
 
 # Display audio and metadata
-def display_item(item, ids):
+def display_item():
+    item = get_current_item()
+    ids = st.session_state.ids
+
     st.header(st.session_state.lang_sett.audio_sample)
     st.audio(item["audio"]["array"], sample_rate=item["audio"]["sampling_rate"])
 
@@ -278,20 +292,12 @@ def annotate_phonetic_script(uthmani_script: str, default_moshaf: MoshafAttribut
             sifat_data.append(sifa.model_dump())
 
         st.session_state.sifat_df = pd.DataFrame(sifat_data)
-        # No need to call st.rerun() here as the button press will trigger a rerun
 
-    # Always show the phonetic script editor, and update its value from session state
-    # Use a key that changes when the button is pressed to force re-render
-    if st.session_state.phonetic_script:
-        phonetic_script_value = st.text_area(
-            st.session_state.lang_sett.phonetic_script,
-            value=st.session_state.phonetic_script,
-            width=300,
-            key=f"phonetic_script_editor_{st.session_state.gen_ph_script_pressed}",
-        )
-        # Update session state whenever the text area content changes
-        if phonetic_script_value != st.session_state.phonetic_script:
-            st.session_state.phonetic_script = phonetic_script_value
+    st.session_state.phonetic_script = st.text_area(
+        st.session_state.lang_sett.phonetic_script,
+        value=st.session_state.phonetic_script,
+        width=300,
+    )
 
     annotate_sifat()
 
@@ -449,7 +455,9 @@ def annotate_sifat():
             st.session_state.last_editor_key = editor_key
 
 
-def annotate_addional_qdabenc_fields(item):
+def annotate_addional_qdabenc_fields():
+    item = get_current_item()
+
     # QdataBenchItem fields
     st.header(st.session_state.lang_sett.qdat_bench_annotation)
 
@@ -600,7 +608,9 @@ def validate_phonetic_script_alignment(
     return sifat_phonemes == phonetic_script_phonemes
 
 
-def save_navigatoin_bar(item, ids):
+def save_navigatoin_bar():
+    item = get_current_item()
+    ids = st.session_state.ids
     # Navigation and saving
     st.divider()
     col1, col2, col3, col4 = st.columns(4)
@@ -613,6 +623,7 @@ def save_navigatoin_bar(item, ids):
             st.session_state.index -= 1
             # Reset for the new item
             reset_item_session_state()
+            load_item_to_session_state()
             st.rerun()
 
     with col2:
@@ -713,10 +724,14 @@ def save_navigatoin_bar(item, ids):
             st.session_state.index += 1
             # Reset for the new item
             reset_item_session_state()
+            load_item_to_session_state()
             st.rerun()
 
 
-def annotation_managment_view(ds, ids):
+def annotation_managment_view():
+    ds = st.session_state.ds
+    ids = st.session_state.ids
+
     # Export annotations
     st.divider()
     st.header(st.session_state.lang_sett.annotations_management)
@@ -842,21 +857,15 @@ def annotation_managment_view(ds, ids):
             st.info(st.session_state.lang_sett.no_annotations)
 
 
+def get_current_item():
+    idx = st.session_state.ids[st.session_state.index]
+    return st.session_state.ds[idx]
+
+
 def main():
     initialize()
 
-    try:
-        ds, ids = load_audio_dataset()
-    except Exception as e:
-        st.error(f"Error loading dataset: {e}")
-        st.stop()
-
     sura_idx_to_name, sura_to_aya_count = get_sura_info()
-
-    # Get current item
-    current_id = ids[st.session_state.index]
-    item = ds[current_id]
-    load_item_to_session_state(item)
 
     # App layout
     select_en_lang = st.toggle(
@@ -869,9 +878,12 @@ def main():
     load_language_settings()
 
     st.title(st.session_state.lang_sett.title)
-    display_item(item, ids)
+    # Get current item
+    load_item_to_session_state()
 
-    annotate_addional_qdabenc_fields(item)
+    display_item()
+
+    annotate_addional_qdabenc_fields()
 
     uthmani_script = select_quran_text(
         sura_idx_to_name=sura_idx_to_name, sura_to_aya_count=sura_to_aya_count
@@ -886,9 +898,9 @@ def main():
     )
     annotate_phonetic_script(uthmani_script, default_moshaf=default_moshaf)
 
-    save_navigatoin_bar(item, ids)
+    save_navigatoin_bar()
 
-    annotation_managment_view(ds, ids)
+    annotation_managment_view()
 
 
 if __name__ == "__main__":
