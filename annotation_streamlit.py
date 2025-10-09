@@ -135,7 +135,6 @@ def save_annotation(item_id, annotation):
 
 def load_item_to_session_state():
     item = get_current_item()
-    print(item["original_id"])
     # Check if current item has existing annotation
     if item["id"] in st.session_state.annotations and not st.session_state.edit_mode:
         annotation_data = st.session_state.annotations[item["id"]]
@@ -143,7 +142,6 @@ def load_item_to_session_state():
         st.session_state.phonetic_script = annotation_data.get(
             "phonetic_transcript", ""
         )
-        print(st.session_state.phonetic_script)
         # Convert sifat to DataFrame
         sifat_list = annotation_data.get("sifat", [])
         st.session_state.sifat_df = pd.DataFrame(
@@ -419,9 +417,6 @@ def annotate_sifat():
             "not_maghnoon": st.session_state.lang_sett.not_maghnoon,
         }
 
-        # Create a unique key for this editor instance
-        editor_key = f"sifat_editor_{st.session_state.index}"
-
         # Use the data editor with explicit value assignment
         edited_df = st.data_editor(
             st.session_state.sifat_df,
@@ -443,16 +438,8 @@ def annotate_sifat():
             },
             width="stretch",
             num_rows="dynamic",  # Change to dynamic to allow adding rows through the editor
-            key=editor_key,
             disabled=["row_index"],  # Make row index non-editable
         )
-
-        # Update the session state if the dataframe has changed
-        # Don't trigger a rerun here as it causes infinite loops
-        if not edited_df.equals(st.session_state.sifat_df):
-            st.session_state.sifat_df = edited_df
-            # Update the last editor key to track changes
-            st.session_state.last_editor_key = editor_key
 
 
 def annotate_addional_qdabenc_fields():
