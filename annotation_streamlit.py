@@ -22,6 +22,8 @@ from qdat_bench.data_models import (
     NoonMoshaddahLen,
 )
 
+ANNOTATIONS_PATH = "./qdat_bench_annotations.josn"
+
 
 def initialize():
     # Initialize session state
@@ -110,7 +112,7 @@ def get_sura_info():
 
 # Load existing annotations
 def load_annotations() -> dict:
-    annotations_file = Path("annotations.json")
+    annotations_file = Path(ANNOTATIONS_PATH)
     if annotations_file.exists():
         with open(annotations_file, "r", encoding="utf-8") as f:
             raw_annotations = json.load(f)
@@ -129,7 +131,7 @@ def save_annotation(item_id, annotation):
     saved_annotations = {k: v.model_dump() for k, v in saved_annotations.items()}
 
     # Save to file
-    with open("annotations.json", "w", encoding="utf-8") as f:
+    with open(ANNOTATIONS_PATH, "w", encoding="utf-8") as f:
         json.dump(saved_annotations, f, ensure_ascii=False, indent=2)
 
 
@@ -418,7 +420,7 @@ def annotate_sifat():
         }
 
         # Use the data editor with explicit value assignment
-        edited_df = st.data_editor(
+        st.session_state.sifat_df = st.data_editor(
             st.session_state.sifat_df,
             column_config={
                 "row_index": st.column_config.NumberColumn(
@@ -572,10 +574,10 @@ def reset_item_session_state():
 
     # Additional values
     for key in [
-        "qalo_alif_len ",
-        "qalo_waw_len ",
-        "laa_alif_len ",
-        "allam_alif_len ",
+        "qalo_alif_len",
+        "qalo_waw_len",
+        "laa_alif_len",
+        "allam_alif_len",
     ]:
         st.session_state[key] = 2
     st.session_state.separate_madd = 4
@@ -821,11 +823,11 @@ def annotation_managment_view():
                         st.error(f"Could not find item {row['id']} in dataset")
 
         # Provide download link
-        with open("annotations.json", "r", encoding="utf-8") as f:
+        with open(ANNOTATIONS_PATH, "r", encoding="utf-8") as f:
             st.download_button(
                 label=st.session_state.lang_sett.download_json,
                 data=f,
-                file_name="annotations.json",
+                file_name=ANNOTATIONS_PATH,
                 mime="application/json",
             )
     else:
@@ -835,7 +837,7 @@ def annotation_managment_view():
     if st.button(st.session_state.lang_sett.clear_annotations):
         if st.session_state.annotations:
             st.session_state.annotations = {}
-            Path("annotations.json").unlink(missing_ok=True)
+            Path(ANNOTATIONS_PATH).unlink(missing_ok=True)
             st.session_state.phonetic_script = ""
             st.session_state.sifat_df = pd.DataFrame()
             st.success(st.session_state.lang_sett.all_annotations_cleared)
@@ -887,7 +889,7 @@ def main():
 
     save_navigatoin_bar()
 
-    annotation_managment_view()
+    # annotation_managment_view()
 
 
 if __name__ == "__main__":

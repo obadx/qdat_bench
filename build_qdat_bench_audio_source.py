@@ -1,4 +1,6 @@
 import os
+from dataclasses import dataclass
+from typing import Any
 
 from datasets import load_dataset, Dataset
 from dotenv import load_dotenv
@@ -38,7 +40,25 @@ def chose_single_source(
     ds: Dataset,
     seed=42,
     selcted_columns=["audio", "id", "original_id", "gender", "age"],
-    forced_ids=["s4_1", "s25_1", "s101_1", "s107_1", "s145_2"],
+    forced_ids=[
+        "s4_1",
+        "s7_5",
+        "s25_1",
+        "s101_1",
+        "s107_1",
+        "s145_2",
+        "s26_1",
+        "s27_5",
+        "s29_8",
+        "s41_3",
+        "s62_2",
+        "s71_3",
+        "s88_2",
+        "s115_1",
+        "s151_5",
+        "s159_1",
+        "s160_1",
+    ],
 ) -> Dataset:
     ds_original_ids = ds["original_id"]
     ds_filtered_ids = fileter_ids(ds_original_ids, seed=seed, forced_ids=forced_ids)
@@ -48,6 +68,28 @@ def chose_single_source(
     ds = ds.select_columns(selcted_columns)
     ds = ds.map(lambda ex: {"gender": "male" if ex["gender"] == 1 else "female"})
 
+    return ds
+
+
+@dataclass
+class ModifiedField:
+    name: str
+    val: Any
+
+
+def modify(ds: Dataset, id_to_mod: dict[str, list[ModifiedField]]):
+    def map_fun(ex):
+        if ex["original_id"] in id_to_mod:
+            for field in id_to_mod[ex["original_id"]]:
+                ex[field.name] = field.val
+        return ex
+
+    ds = ds.map(map_fun)
+    return ds
+
+
+def delete_items(ds: Dataset, ids):
+    ds = ds.filter(lambda ex: ex["original_id"] not in ids)
     return ds
 
 
@@ -74,13 +116,17 @@ if __name__ == "__main__":
     print(ds)
 
     ds = chose_single_source(ds["train"], seed=seed)
+
+    ds = modify(
+        ds,
+        {
+            "s36_9": [ModifiedField(name="gender", val="male")],
+            "s149_1": [ModifiedField(name="gender", val="female")],
+        },
+    )
+
+    ds = delete_items(ds, ["s66_9", "s80_10"])
     print("After Filteration")
     print(ds)
-
-    print(ds[4]["original_id"])
-    print(ds[25]["original_id"])
-    print(ds[101]["original_id"])
-    print(ds[107]["original_id"])
-    print(ds[145]["original_id"])
 
     ds.push_to_hub("obadx/qdat_bench")
