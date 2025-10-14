@@ -9,9 +9,8 @@ MADD_LEN = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 
 class NoonMoshaddahLen(IntEnum):
-    NO_GHONNAH = 0
-    PARTIAL = 1
-    COMPLETE = 2
+    PARTIAL = 0
+    COMPLETE = 1
 
 
 class NoonMokhfahLen(IntEnum):

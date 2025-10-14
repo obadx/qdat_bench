@@ -22,7 +22,7 @@ from qdat_bench.data_models import (
     NoonMoshaddahLen,
 )
 
-ANNOTATIONS_PATH = "./qdat_bench_annotations.josn"
+ANNOTATIONS_PATH = "./qdat_bench_annotations.json"
 
 
 def initialize():
@@ -514,7 +514,6 @@ def annotate_addional_qdabenc_fields():
             st.session_state.lang_sett.noon_moshaddadah_len,
             options=list(NoonMoshaddahLen),
             format_func=lambda x: {
-                NoonMoshaddahLen.NO_GHONNAH: st.session_state.lang_sett.not_maghnoon,
                 NoonMoshaddahLen.PARTIAL: st.session_state.lang_sett.partial,
                 NoonMoshaddahLen.COMPLETE: st.session_state.lang_sett.complete,
             }[x],
