@@ -42,6 +42,9 @@ ui = [
     "pandas>=2.3.2",
     "streamlit>=1.49.1",
 ]
+stats = [
+    "matplotlib>=3.10.7",
+]
 
 [project.urls]
 Homepage = "https://github.com/obadx/prepare-quran-dataset"
