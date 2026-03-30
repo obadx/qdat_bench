@@ -49,7 +49,7 @@ def group_avg_metrics_for_violin(
 def plot_bootstrap_violin(
     bootstrap_samples_path: str,
     dir: str = "assets",
-    title: str = "Bootstrap Analysis of Average Metrics",
+    title: str = "Bootstrap Analysis of qdat_bench Average Metrics",
 ) -> None:
     """
     Create violin plots for bootstrapped average metrics.
@@ -122,7 +122,7 @@ def plot_bootstrap_violin(
     fig.legend(
         handles=[mean_line, median_line],
         loc="upper right",
-        bbox_to_anchor=(0.98, 0.98),
+        bbox_to_anchor=(0.98, 0.88),
         fontsize=12,
         frameon=True,
         framealpha=0.9,
