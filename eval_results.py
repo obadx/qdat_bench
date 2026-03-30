@@ -100,25 +100,23 @@ def extract_noon_mokhfah_len(
 ) -> NoonMokhfahLen:
     ph_trans = re.sub(r"\s+", "", phonetic_transcript)
     match = re.search(
-        f"{ph.hamza}{ph.fatha}([{ph.noon}{ph.noon_mokhfah}]{{1,8}}){ph.taa}",
+        f"({ph.noon_mokhfah}{{1,8}})",
         ph_trans,
     )
     if match:
-        if match.group(1)[0] == ph.noon:
-            return NoonMokhfahLen.NOON
-        elif len(match.group(1)) < 3:
+        if len(match.group(1)) < 3:
             return NoonMokhfahLen.PARTIAL
         else:
             return NoonMokhfahLen.COMPLETE
     else:
-        return NoonMokhfahLen.PARTIAL
+        return NoonMokhfahLen.NOON
 
 
 def extract_allam_alif_len(
     phonetic_transcript: str, sifat: list[dict] | None = None
 ) -> int:
     ph_trans = re.sub(r"\s+", "", phonetic_transcript)
-    match = re.search(f"{ph.lam}{{2}}{ph.fatha}({ph.alif}{{1,8}}){ph.meem}", ph_trans)
+    match = re.search(f"{ph.lam}{ph.fatha}({ph.alif}{{1,8}}){ph.meem}", ph_trans)
     if match:
         madd_len = len(match.group(1))
     else:
@@ -130,7 +128,7 @@ def extract_madd_aared_len(
     phonetic_transcript: str, sifat: list[dict] | None = None
 ) -> int:
     ph_trans = re.sub(r"\s+", "", phonetic_transcript)
-    match = re.search(f"{ph.yaa}.({ph.waw_madd}{{1,8}})(?:{ph.baa}|$)", ph_trans)
+    match = re.search(f"({ph.waw_madd}{{1,8}}).?.?{ph.qlqla}?$", ph_trans)
     if match:
         madd_len = len(match.group(1))
     else:
@@ -323,11 +321,19 @@ class QdataColumAttributes:
 
 EVAL_COLMS = [
     QdataColumAttributes(
+        name="qalo_alif_len",
+        extract_func=extract_qalo_alif_len,
+        metrics=[
+            QdataBenchRMSE(),
+            # QdataBenchR2(),
+        ],
+    ),
+    QdataColumAttributes(
         name="qalo_waw_len",
         extract_func=extract_qalo_waw_len,
         metrics=[
             QdataBenchRMSE(),
-            QdataBenchR2(),
+            # QdataBenchR2(),
         ],
     ),
     QdataColumAttributes(
@@ -335,7 +341,7 @@ EVAL_COLMS = [
         extract_func=extract_laa_alif_len,
         metrics=[
             QdataBenchRMSE(),
-            QdataBenchR2(),
+            # QdataBenchR2(),
         ],
     ),
     QdataColumAttributes(
@@ -343,7 +349,7 @@ EVAL_COLMS = [
         extract_func=extract_separate_madd,
         metrics=[
             QdataBenchRMSE(),
-            QdataBenchR2(),
+            # QdataBenchR2(),
         ],
     ),
     QdataColumAttributes(
@@ -373,7 +379,7 @@ EVAL_COLMS = [
         extract_func=extract_allam_alif_len,
         metrics=[
             QdataBenchRMSE(),
-            QdataBenchR2(),
+            # QdataBenchR2(),
         ],
     ),
     QdataColumAttributes(
@@ -381,7 +387,7 @@ EVAL_COLMS = [
         extract_func=extract_madd_aared_len,
         metrics=[
             QdataBenchRMSE(),
-            QdataBenchR2(),
+            # QdataBenchR2(),
         ],
     ),
     QdataColumAttributes(
@@ -434,6 +440,48 @@ def compute_qdat_bench_metrics(pred_trans_ds: Dataset, qdat_bench_ds: Dataset):
             )
 
     return metrics_dict
+
+
+def compute_qdat_bench_average_metrics(name_to_metric: dict[str, int | float]):
+    def compute_avg_metric(columns: list[str] | str):
+        if not isinstance(columns, list):
+            columns = [columns]
+        total_sum = 0
+        for col in columns:
+            total_sum += name_to_metric[col]
+        return total_sum / len(columns)
+
+    f1_columns = [
+        "noon_moshaddadah_len_macro_f1",
+        "noon_mokhfah_len_macro_f1",
+        "qalqalah_macro_f1",
+    ]
+    acc_columns = [
+        "noon_moshaddadah_len_accuracy",
+        "noon_mokhfah_len_accuracy",
+        "qalqalah_accuracy",
+    ]
+    rmse_normal_madd_columns = [
+        "qalo_alif_len_rmse",
+        "qalo_waw_len_rmse",
+        "laa_alif_len_rmse",
+        "allam_alif_len_rmse",
+    ]
+    rmse_columns = rmse_normal_madd_columns + [
+        "separate_madd_rmse",
+        "madd_aared_len_rmse",
+    ]
+
+    return {
+        "per_phonemes": name_to_metric["per_phonemes"],
+        "avg_per": name_to_metric["average_per"],
+        "avg_tajweed_f1": compute_avg_metric(f1_columns),
+        "avg_tajweed_acc": compute_avg_metric(acc_columns),
+        "avg_madd_rmse": compute_avg_metric(rmse_columns),
+        "avg_nromal_madd_rmse": compute_avg_metric(rmse_normal_madd_columns),
+        "rmse_madd_aared": name_to_metric["madd_aared_len_rmse"],
+        "rmse_separate_madd": name_to_metric["separate_madd_rmse"],
+    }
 
 
 def sequence_to_chars(labels) -> str:
@@ -518,7 +566,6 @@ def align_preditc_ds(pred_ds: Dataset, ref_ds_ids: list[str]) -> Dataset:
 
 def main(args):
     # TODO:
-    # 1. Align ids
     # 2. compute the rest of the metrics
 
     pred_trans_ds = Dataset.from_json(str(args.transcription_file))
@@ -548,6 +595,20 @@ def main(args):
     qdat_metrics = compute_qdat_bench_metrics(pred_trans_ds, qdat_bench_ds)
     print(json.dumps(qdat_metrics, indent=2))
 
+    qdat_avg_metrics = compute_qdat_bench_average_metrics(qdat_metrics | speech_metrics)
+    print(json.dumps(qdat_avg_metrics, indent=2))
+
+    to_save_metrics = {
+        "speech_metrics": speech_metrics,
+        "qdat_metrics": qdat_metrics,
+        "qdat_avg_metrics": qdat_avg_metrics,
+    }
+    args.save_dir.mkdir(exist_ok=True)
+    save_path = args.save_dir / f"result_{args.transcription_file.stem}.json"
+    with open(save_path, "w") as f:
+        json.dump(to_save_metrics, f, indent=2)
+    print(f"Reulst is saved in {save_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Evaluation Results of muaalem model")
@@ -559,5 +620,12 @@ if __name__ == "__main__":
             "./assets/muaalem-transcripts/muaalem-model-v3_2_predictions.jsonl"
         ),
     )
+    parser.add_argument(
+        "--save-dir",
+        help="The parth to save resuts",
+        type=Path,
+        default=Path("./assets/results"),
+    )
+
     args = parser.parse_args()
     main(args)
