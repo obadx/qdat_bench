@@ -71,7 +71,7 @@ def plot_bootstrap_violin(
     metric_names = list(bootstrap_samples[0].keys())
     metric_categories = group_avg_metrics_for_violin(metric_names)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(10, 6), constrained_layout=True)
 
     categories = [
         ("per_metrics", "PER Metrics (lower is better)", "Blues"),
@@ -79,7 +79,7 @@ def plot_bootstrap_violin(
         ("percentage_metrics", "Percentage Metrics (higher is better)", "Greens"),
     ]
 
-    for ax, (cat_key, cat_title, cmap) in zip(axes, categories):
+    for idx, (ax, (cat_key, cat_title, cmap)) in enumerate(zip(axes, categories)):
         metrics = metric_categories[cat_key]
 
         if not metrics:
@@ -88,12 +88,23 @@ def plot_bootstrap_violin(
             ax.axis("off")
             continue
 
+        ax.text(
+            0.02,
+            0.98,
+            f"({chr(97 + idx)})",
+            transform=ax.transAxes,
+            fontsize=11,
+            fontweight="bold",
+            va="top",
+            ha="left",
+        )
+
         data = []
         labels = []
         for metric in metrics:
             values = [sample[metric] for sample in bootstrap_samples]
             data.append(values)
-            labels.append(metric.replace("_", "\n"))
+            labels.append(metric.replace("_", " "))
 
         parts = ax.violinplot(
             data, positions=range(len(metrics)), showmeans=True, showmedians=True
@@ -108,9 +119,9 @@ def plot_bootstrap_violin(
         parts["cmedians"].set_color("blue")
 
         ax.set_xticks(range(len(metrics)))
-        ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=14)
+        ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=8)
         ax.set_ylabel("Value", fontsize=12)
-        ax.set_title(cat_title, fontsize=14)
+        ax.set_title(cat_title, fontsize=10)
         ax.grid(True, alpha=0.3)
         ax.tick_params(axis="both", labelsize=12)
 
@@ -122,14 +133,13 @@ def plot_bootstrap_violin(
     fig.legend(
         handles=[mean_line, median_line],
         loc="upper right",
-        bbox_to_anchor=(0.98, 0.88),
-        fontsize=12,
+        bbox_to_anchor=(1.0, 0.95),
+        fontsize=9,
         frameon=True,
         framealpha=0.9,
     )
 
-    fig.suptitle(title, fontsize=16, fontweight="bold", y=1.02)
-    plt.tight_layout()
+    fig.suptitle(title, fontsize=14, fontweight="bold", y=1.06)
 
     save_path = os.path.join(dir, "bootstrap_violin_plots.png")
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
@@ -287,7 +297,7 @@ def plot_tajweed_columns_histogram(ds: Dataset, dir="assets", num_cols=3):
     # Add main title to the whole figure
     fig.suptitle(
         "Tajweed Rules Correct/Wrong Distribution Analysis for Qdat Bench",
-        fontsize=20,
+        fontsize=10,
         fontweight="bold",
         y=0.98,
     )
@@ -298,7 +308,7 @@ def plot_tajweed_columns_histogram(ds: Dataset, dir="assets", num_cols=3):
         bbox_to_anchor=(0.98, 0.94),
         frameon=True,
         framealpha=0.9,
-        fontsize=14,
+        fontsize=10,
     )
 
     plt.tight_layout()
